@@ -49,4 +49,4 @@ const merchantService = new AllinPayMerchantService(allinPayConfig)
 const orderService = new AllinPayOrderService(allinPayConfig)
 ```
 
-> 三个服务的方法可详见通联接口文档
+> 三个服务的具体用法可详见通联接口文档
