@@ -1,0 +1,31 @@
+{
+  "name": "coa-allin-pay",
+  "version": "0.0.0",
+  "description": "Allin Pay SDK",
+  "keywords": [
+    "coajs",
+    "coa",
+    "allin",
+    "pay"
+  ],
+  "license": "MIT",
+  "author": "Aex",
+  "homepage": "https://github.com/coajs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/coajs/coa-allin-pay.git"
+  },
+  "scripts": {
+    "dev": "tsc -w",
+    "build": "rm -rf dist && tsc && cp package.json *.md dist",
+    "publish-prerelease": "yarn build && yarn version --prerelease && cp package.json README.md dist && cd dist && npm publish"
+  },
+  "dependencies": {
+    "coa-error": "^1.1.3",
+    "coa-helper": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.35",
+    "typescript": "^4.2.3"
+  }
+}
