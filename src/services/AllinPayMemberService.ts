@@ -14,12 +14,13 @@ export class AllinPayMemberService extends AllinPayService {
    * @param bizUserId 商户系统用户标识 商户系统中唯一编号
    * @param memberType 会员类型 2企业会员 3个人会员
    * @param source 访问终端类型 1Mobile 2PC
+   * @param acctOrgType 0-通联 1-华通银行 默认1
    */
-  async createMember (bizUserId: string, memberType: AllinPay.MemberType, source: 1 | 2) {
+  async createMember (bizUserId: string, memberType: AllinPay.MemberType, source: 1 | 2, acctOrgType: number) {
     const param = { bizUserId, memberType, source }
     const result = await this.bin.service_soa_allow('MemberService', 'createMember', param, '30000')
     if (result.allow) {
-      const member = await this.getMemberInfo(bizUserId)
+      const member = await this.getMemberInfo(bizUserId, acctOrgType)
       result.userId = member.memberInfo?.userId || ''
     }
     return result as { bizUserId: string, userId: string }
@@ -174,10 +175,10 @@ export class AllinPayMemberService extends AllinPayService {
    * 该接口支持查询个人会员、企业会员。
    * 针对通联存管使用汇入金或华通存管的客户，可根据上送开户机构类型查询对应会员开通的通联子账号或华通子账号；
    * @param bizUserId 商户系统用户标识 商户系统中唯一编号
-   * acctOrgType 0-通联 1-华通银行 默认1
+   * @param acctOrgType 0-通联 1-华通银行 默认1
    */
-  async getMemberInfo (bizUserId: string) {
-    const param = { bizUserId, acctOrgType: 1 }
+  async getMemberInfo (bizUserId: string, acctOrgType: number) {
+    const param = { bizUserId, acctOrgType }
     const result = await this.bin.service_soa('MemberService', 'getMemberInfo', param)
     this.bin.param_decrypt(result, ['memberInfo.identityCardNo'])
     return result as { bizUserId: string, memberType: AllinPay.MemberType, memberInfo: AllinPay.MemberInfo }
@@ -257,10 +258,11 @@ export class AllinPayMemberService extends AllinPayService {
    * @param bizUserId 商户系统用户标识，商户系统中唯一编号
    */
   async createBankSubAcctNo (bizUserId: string) {
-    const param = { bizUserId, accountSetNo: this.config.accountSetNo, acctOrgType: 1 }
+    const acctOrgType = 1
+    const param = { bizUserId, accountSetNo: this.config.accountSetNo, acctOrgType }
     const result = await this.bin.service_soa('MemberService', 'createBankSubAcctNo', param)
     if (result.allow) {
-      const res = await this.getMemberInfo(bizUserId)
+      const res = await this.getMemberInfo(bizUserId, acctOrgType)
       result.subAcctNo = res.memberInfo.subAcctNo
     }
     result.acctOrgType = param.acctOrgType

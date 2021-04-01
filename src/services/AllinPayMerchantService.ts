@@ -6,6 +6,16 @@ import { AllinPayService } from '../libs/AllinPayService'
 export class AllinPayMerchantService extends AllinPayService {
 
   /**
+   * 平台头寸查询
+   * 根据平台商户管理模式不同，支持查询通联通头寸和电子账户头寸
+   */
+  async queryReserveFundBalance () {
+    const param = { sysid: this.config.sysId, fundAcctSys: 1 }
+    const result = await this.bin.service_soa('MerchantService', 'queryReserveFundBalance', param)
+    return result as { accountNo: string, accountName: string, balance: number }
+  }
+
+  /**
    * 平台账户集余额查询
    * 支持查询平台在通商云系统中各账户集余额
    */

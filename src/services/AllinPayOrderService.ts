@@ -108,6 +108,52 @@ export class AllinPayOrderService extends AllinPayService {
   }
 
   /**
+   * 消费申请(通联通集团模式)
+   * @param payerId 付款方商户系统用户标识，商户 系统中唯一编号。
+   * @param bizOrderNo 商户订单号（支付订单）
+   * @param amount 订单金额
+   * @param openId 微信小程序的openId
+   * @param summary 摘要
+   * @param extendOption 扩展配置
+   */
+  async consumeApplyWxaOrg (bizOrderNo: string, payerId: string, openId: string, amount: number, summary = '', extendOption: { [key: string]: any } = {}) {
+    const param = {
+      payerId,
+      recieverId: '#yunBizUserId_B2C#',
+      bizOrderNo,
+      amount,
+      fee: 0,
+      payMethod: {
+        WECHATPAY_MINIPROGRAM_ORG: {
+          vspCusid: extendOption?.vspCusId || this.config.wxOrgMiniPay.vspCusId,
+          subAppId: extendOption?.subAppWxaId || this.config.wxOrgMiniPay.subAppWxaId,
+          limitPay: '',
+          amount,
+          acct: openId,
+        }
+      },
+      validateType: 0,
+      summary: summary.slice(0, 20),
+      extendInfo: summary.slice(0, 50),
+      source: 1,
+      industryCode: '1910',
+      industryName: '其他',
+      backUrl: this.config.notify + 'trade_pay'
+    }
+    const result = await this.bin.service_soa('OrderService', 'consumeApply', param)
+
+    // 如果支付状态为失败
+    if (result.payStatus === 'fail')
+      die.hint('支付消费异常：' + result.payFailMessage)
+
+    // 处理payInfo
+    if (typeof result.payInfo === 'string')
+      result.payInfo = JSON.parse(result.payInfo)
+
+    return result as { bizUserId: string, bizOrderNo: string, orderNo: string, payStatus: 'success' | 'pending', payInfo: object }
+  }
+
+  /**
    * 查询订单状态
    * @param bizOrderNo 商户订单号（支付订单）
    */
@@ -189,7 +235,7 @@ export class AllinPayOrderService extends AllinPayService {
    * @param name 姓名
    * @param amount 订单金额
    */
-  async withdrawApply (bizOrderNo: string, bizUserId: string, subAcctNo: string, bankCardNo: string, name: string, amount: number) {
+  async withdrawApplyHT (bizOrderNo: string, bizUserId: string, subAcctNo: string, bankCardNo: string, name: string, amount: number) {
 
     const accountSetNo = this.config.accountSetNo
     const withdrawType = 'D0'
@@ -211,6 +257,44 @@ export class AllinPayOrderService extends AllinPayService {
           AMOUNT: amount,
           SUMMARY: '',
           SIGNED_MSG_MER: this.bin.bank_signer(bankCardNo, name, amount.toString())
+        }
+      },
+      source: 1,
+      industryCode: '1910',
+      industryName: '其他',
+      backUrl: this.config.notify + 'withdraw'
+    }
+    this.bin.param_encrypt(param, ['bankCardNo'])
+
+    const result = await this.bin.service_soa('OrderService', 'withdrawApply', param)
+
+    // 如果支付状态为失败
+    if (result.payStatus === 'fail')
+      die.hint('提现申请异常：' + result.payFailMessage)
+
+    _.assign(result, { accountSetNo, withdrawType })
+
+    return result as { bizUserId: string, bizOrderNo: string, orderNo: string, accountSetNo: string, withdrawType: string, payStatus: 'success' | 'pending', payInfo: string }
+  }
+
+  // 申请提现（TLT存管模式）
+  async withdrawApplyTLT (bizOrderNo: string, bizUserId: string, bankCardNo: string, amount: number) {
+
+    const accountSetNo = this.config.accountSetNo
+    const withdrawType = 'D0'
+
+    const param = {
+      bizOrderNo,
+      bizUserId,
+      accountSetNo,
+      amount,
+      fee: 0,
+      validateType: 0,
+      bankCardNo,
+      withdrawType,
+      payMethod: {
+        WITHDRAW_TLT: {
+          payTypeName: 'withdraw_tlt',
         }
       },
       source: 1,

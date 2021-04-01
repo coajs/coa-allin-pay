@@ -1,5 +1,4 @@
 const config = {
-  isProd: false,
   endpoint: '',
   notify: '',
   sysId: '',
@@ -13,6 +12,10 @@ const config = {
     mchId: '',
     appWxaId: '',
     appWxaName: ''
+  },
+  wxOrgMiniPay: {
+    vspCusId: '',
+    subAppWxaId: '',
   },
   wxSubMiniPay: {
     mchId: '',
@@ -30,16 +33,16 @@ const config = {
 
 const memberInfo = {
   'country': null,
-  'subAcctNo': '9120001000436901500',
+  'subAcctNo': '9120001000436901587',
   'isSignContract': true,
-  'contractNo': '1265918142371078100',
+  'contractNo': '1265918142371078144',
   'payFailAmount': 0,
   'remark': null,
   'source': 1,
   'province': null,
   'userState': 1,
   'identityType': 1,
-  'ContractNo': '1265918142371078100',
+  'ContractNo': '1265918142371078144',
   'identityCardNo': '111',
   'isSetPayPwd': false,
   'acctOrgType': 1,

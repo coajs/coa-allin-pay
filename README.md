@@ -29,11 +29,10 @@ import { AllinPayMemberService, AllinPayMerchantService, AllinPayOrderService } 
 
 // 相关配置
 const allinPayConfig = {
-  isProd: true,                             // 是否是生成环境
   endpoint: 'https://fintech.allinpay.com', // 通商云的服务地址
   notify: 'https://example.com',            // 自己的通知地址
-  accountSetNo: '200100',                   // 子账户集
-  sysId: '19022714235304000000',            // 客户编号
+  accountSetNo: '2000100',                  // 子账户集
+  sysId: '19022700000304000000',            // 客户编号
   privateKey: 'XXXXXXXXXXXXXXXXXXXXXXX',    // 商户私钥
   allinPublicKey: 'XXXXXXXXXXXXXXXXXXXXX',  // 通商云公钥
   bankPrivateKey: 'XXXXXXXXXXXXXXXXXXXXX',  // 银行私钥

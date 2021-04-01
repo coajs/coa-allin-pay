@@ -6,9 +6,9 @@ export class AllinPayService {
   protected bin: AllinPayBin
   protected config: AllinPay.Config
 
-  constructor (config: AllinPay.Config) {
-    this.config = config
-    this.bin = new AllinPayBin(config)
+  constructor (bin: AllinPayBin) {
+    this.bin = bin
+    this.config = this.bin.config
   }
 
 }

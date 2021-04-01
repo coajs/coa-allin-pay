@@ -1,7 +1,6 @@
 import { die } from 'coa-error'
-import { $, _, axios, dayjs } from 'coa-helper'
+import { $, _, axios } from 'coa-helper'
 import { constants, createHash, createSign, createVerify, privateDecrypt, publicEncrypt } from 'crypto'
-import { appendFileSync } from 'fs'
 import * as querystring from 'querystring'
 import { AllinPay } from '../typings'
 
@@ -13,7 +12,7 @@ interface Dic<T> {
 
 export class AllinPayBin {
 
-  private config: AllinPay.Config
+  readonly config: AllinPay.Config
 
   constructor (config: AllinPay.Config) {
     this.config = config
@@ -27,10 +26,15 @@ export class AllinPayBin {
 
     const res = await axios.get(this.config.endpoint + '/service/soa', { params })
 
-    this.devLogRequest(params, res.data)
+    this.onRequest(params, res.data)
 
     // 处理结果
-    return this.handleResult(res)
+    try {
+      return this.handleResult(res)
+    } catch (e) {
+      this.onRequestError(params, res.data, e)
+      throw e
+    }
   }
 
   // 发送允许部分异常的service_soa请求
@@ -90,26 +94,16 @@ export class AllinPayBin {
     }
   }
 
-  // 开发环境记录返回日志
-  devLogBack (body: any) {
-    if (this.config.isProd) return
-    const text = dayjs().format('YYYY-MM-DD HH:mm:ss') + '\n'
-      + 'body: ' + JSON.stringify(body, undefined, 2) + '\n'
-      + '\n'
-    const file = 'run-log/allin-' + dayjs().format('YYMMDDHH') + '-back.log'
-    appendFileSync(file, text)
+  // 推送返回记录
+  onBackReceive (body: any) {
   }
 
-  // 开发环境记录请求日志
-  devLogRequest (param: any, response: any) {
-    if (this.config.isProd) return
-    const text = dayjs().format('YYYY-MM-DD HH:mm:ss') + '\n'
-      + 'params: ' + JSON.stringify(param, undefined, 2) + '\n'
-      + 'params_req: ' + JSON.stringify(JSON.parse(param.req), undefined, 2) + '\n'
-      + 'response: ' + JSON.stringify(response, undefined, 2) + '\n'
-      + '\n'
-    const file = 'run-log/allin-' + dayjs().format('YYMMDDHH') + '-request.log'
-    appendFileSync(file, text)
+  // 请求记录
+  onRequest (param: any, response: any) {
+  }
+
+  // 请求失败
+  onRequestError (param: any, response: any, error: any) {
   }
 
   // 敏感信息加密
