@@ -25,10 +25,10 @@ yarn add coa-allin-pay
 ### 直接使用
 
 ```typescript
-import { AllinPayMemberService, AllinPayMerchantService, AllinPayOrderService } from 'coa-allin-pay'
+import { AllinPayBin, AllinPayMemberService, AllinPayMerchantService, AllinPayOrderService } from 'coa-allin-pay'
 
 // 相关配置
-const allinPayConfig = {
+const config = {
   endpoint: 'https://fintech.allinpay.com', // 通商云的服务地址
   notify: 'https://example.com',            // 自己的通知地址
   accountSetNo: '2000100',                  // 子账户集
@@ -38,14 +38,51 @@ const allinPayConfig = {
   bankPrivateKey: 'XXXXXXXXXXXXXXXXXXXXX',  // 银行私钥
 }
 
+// 初始化配置实例
+const bin = new AllinPayBin(config)
+
 // 成员相关服务
-const memberService = new AllinPayMemberService(allinPayConfig)
+const memberService = new AllinPayMemberService(bin)
 
 // 商户相关服务
-const merchantService = new AllinPayMerchantService(allinPayConfig)
+const merchantService = new AllinPayMerchantService(bin)
 
 // 订单相关服务
-const orderService = new AllinPayOrderService(allinPayConfig)
+const orderService = new AllinPayOrderService(bin)
 ```
 
 > 三个服务的具体用法可详见通联接口文档
+
+### 自定义BIN方法
+
+根据实际需要可以重写部分bin方法。可用于记录错误请求日志、推送通知日志等
+
+```typescript
+// 定义一个自定义BIN类
+class CustomBin extends AllinPayBin {
+
+  // 推送通知
+  onBackReceive (body) {
+    // do something
+    console.log(body)
+  }
+
+  // 请求记录
+  onRequest (param, response) {
+    // do something
+    console.log(param, response)
+  }
+
+  // 请求失败
+  onRequestError (param, response, error) {
+    // do something
+    console.log(param, response, error)
+  }
+}
+
+// 初始化配置实例
+const bin = new CustomBin(config)
+
+// 使用成员相关服务
+const memberService = new AllinPayMemberService(bin)
+```
