@@ -1,3 +1,4 @@
+import { $ } from 'coa-helper'
 import { AllinPayService } from '../libs/AllinPayService'
 
 /**
@@ -12,7 +13,7 @@ export class AllinPayMerchantService extends AllinPayService {
   async queryReserveFundBalance () {
     const param = { sysid: this.config.sysId, fundAcctSys: 1 }
     const result = await this.bin.service_soa('MerchantService', 'queryReserveFundBalance', param)
-    return result as { accountNo: string, accountName: string, balance: number }
+    return $.camelCaseKeys(result) as { accountNo: string, accountName: string, balance: number, defClr: number }
   }
 
   /**
