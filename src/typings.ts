@@ -88,19 +88,10 @@ const cardBinInfo = {
   'cardTypeLabel': '借记卡'
 }
 
-const orderDetail = {
-  'buyerBizUserId': 'payer_id_for_test_aex',
-  'amount': 1,
-  'orderNo': '1266242455984967680',
-  'orderStatus': 4,
-  'payDatetime': '2020-05-29 13:44:13',
-  'bizOrderNo': 'consume9aa75c5a9a0e555dd0'
-}
-
 const inExpDetail = {
   'changeTime': '2020-05-29 16:27:22',
   'oriAmount': 0,
-  'tradeNo': '2005291627197411026167',
+  'tradeNo': '200000027197411000000',
   'curFreezenAmount': 0,
   'accountSetName': '上海分公司测试应用-托管账户集',
   'chgAmount': 2,
@@ -110,6 +101,8 @@ const inExpDetail = {
 }
 
 export namespace AllinPay {
+
+  export type Config = typeof config
 
   export interface CompanyBasicInfo {
     companyName: string,
@@ -125,7 +118,15 @@ export namespace AllinPay {
     unionBank: string
   }
 
-  export type Config = typeof config
+  export interface OrderDetail {
+    buyerBizUserId: string,
+    amount: number,
+    orderNo: string,
+    errorMessage?: string,
+    orderStatus: number,
+    payDatetime: string,
+    bizOrderNo: string
+  }
 
   // 2企业会员 3个人会员
   export type MemberType = 2 | 3
@@ -133,6 +134,5 @@ export namespace AllinPay {
   export type MemberInfo = typeof memberInfo
   export type BankCardInfo = typeof bankCardInfo
   export type CardBinInfo = typeof cardBinInfo
-  export type OrderDetail = typeof orderDetail
   export type InExpDetail = typeof inExpDetail
 }
