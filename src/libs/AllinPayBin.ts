@@ -1,5 +1,5 @@
 import { die } from 'coa-error'
-import { $, _, axios } from 'coa-helper'
+import { $, axios, _ } from 'coa-helper'
 import { constants, createHash, createSign, createVerify, privateDecrypt, publicEncrypt } from 'crypto'
 import * as querystring from 'querystring'
 import { AllinPay } from '../typings'
