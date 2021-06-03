@@ -8,7 +8,6 @@ import { AllinPay } from '../typings'
  * 2、业务端通过唯一标识（bizUserId）创建会员，接口返回通商云会员唯一标识（userId），两者一一对应，在后 续的接口调用中一般通过业务端唯一标识（bizUserId）来标识用户身份。
  */
 export class AllinPayMemberService extends AllinPayService {
-
   /**
    * 创建会员
    * @param bizUserId 商户系统用户标识 商户系统中唯一编号
@@ -16,14 +15,14 @@ export class AllinPayMemberService extends AllinPayService {
    * @param source 访问终端类型 1Mobile 2PC
    * @param acctOrgType 0-通联 1-华通银行 默认1
    */
-  async createMember (bizUserId: string, memberType: AllinPay.MemberType, source: 1 | 2, acctOrgType: number) {
+  async createMember(bizUserId: string, memberType: AllinPay.MemberType, source: 1 | 2, acctOrgType: number) {
     const param = { bizUserId, memberType, source }
     const result = await this.bin.service_soa_allow('MemberService', 'createMember', param, '30000')
     if (result.allow) {
       const member = await this.getMemberInfo(bizUserId, acctOrgType)
       result.userId = member.memberInfo?.userId || ''
     }
-    return result as { bizUserId: string, userId: string }
+    return result as { bizUserId: string; userId: string }
   }
 
   /**
@@ -31,7 +30,7 @@ export class AllinPayMemberService extends AllinPayService {
    * 在业务端用户存在账户安全风险等异常情况，需要限制交易时使用，会员被锁定后将无法创建订单，也不能收款。 除解锁会员之外，其它接口都将返回错误信息“会员已锁定”
    * @param bizUserId 商户系统用户标识 商户系统中唯一编号
    */
-  async lockMember (bizUserId: string) {
+  async lockMember(bizUserId: string) {
     const param = { bizUserId }
     const result = await this.bin.service_soa_allow('MemberService', 'lockMember', param, '30022')
     return result as { bizUserId: string }
@@ -41,7 +40,7 @@ export class AllinPayMemberService extends AllinPayService {
    * 解锁会员
    * @param bizUserId 商户系统用户标识 商户系统中唯一编号
    */
-  async unlockMember (bizUserId: string) {
+  async unlockMember(bizUserId: string) {
     const param = { bizUserId }
     const result = await this.bin.service_soa_allow('MemberService', 'unlockMember', param, '9000')
     return result as { bizUserId: string }
@@ -57,10 +56,10 @@ export class AllinPayMemberService extends AllinPayService {
    * @param phone 手机号
    * @param verificationCodeType 验证码类型 9-绑定手机 6-解绑手机
    */
-  async sendVerificationCode (bizUserId: string, phone: string, verificationCodeType: 9 | 6) {
+  async sendVerificationCode(bizUserId: string, phone: string, verificationCodeType: 9 | 6) {
     const param = { bizUserId, phone, verificationCodeType }
     const result = await this.bin.service_soa('MemberService', 'sendVerificationCode', param)
-    return result as { bizUserId: string, phone: string }
+    return result as { bizUserId: string; phone: string }
   }
 
   /**
@@ -73,10 +72,10 @@ export class AllinPayMemberService extends AllinPayService {
    * @param phone 手机号
    * @param verificationCode 验证码
    */
-  async bindPhone (bizUserId: string, phone: string, verificationCode: string) {
+  async bindPhone(bizUserId: string, phone: string, verificationCode: string) {
     const param = { bizUserId, phone, verificationCode }
     const result = await this.bin.service_soa_allow('MemberService', 'bindPhone', param, '30024')
-    return result as { bizUserId: string, phone: string }
+    return result as { bizUserId: string; phone: string }
   }
 
   /**
@@ -87,10 +86,10 @@ export class AllinPayMemberService extends AllinPayService {
    * @param phone 手机号
    * @param verificationCode 验证码
    */
-  async unbindPhone (bizUserId: string, phone: string, verificationCode: string) {
+  async unbindPhone(bizUserId: string, phone: string, verificationCode: string) {
     const param = { bizUserId, phone, verificationCode }
     const result = await this.bin.service_soa('MemberService', 'unbindPhone', param)
-    return result as { bizUserId: string, phone: string }
+    return result as { bizUserId: string; phone: string }
   }
 
   /**
@@ -104,7 +103,7 @@ export class AllinPayMemberService extends AllinPayService {
    * @param acct 支付账户用户标识，微信小程序支付填openid
    * acctType 支付账户类型，weChatMiniProgram-微信小程序
    */
-  async applyBindAcctWxa (bizUserId: string, acct: string) {
+  async applyBindAcctWxa(bizUserId: string, acct: string) {
     const param = { bizUserId, acct, operationType: 'set', acctType: 'weChatMiniProgram' }
     const result = await this.bin.service_soa_allow('MemberService', 'applyBindAcct', param, '9000')
     return result as { bizUserId: string }
@@ -124,12 +123,31 @@ export class AllinPayMemberService extends AllinPayService {
    * @param professionNo 职业
    * @param telephone 联系电话
    */
-  async setRealName (bizUserId: string, name: string, identityNo: string, identityBeginDate: string, identityEndDate: string, address: string, professionNo: string, telephone: string) {
+  async setRealName(
+    bizUserId: string,
+    name: string,
+    identityNo: string,
+    identityBeginDate: string,
+    identityEndDate: string,
+    address: string,
+    professionNo: string,
+    telephone: string
+  ) {
     const param = { bizUserId, name, identityType: 1, identityNo, identityBeginDate, identityEndDate, address, professionNo, telephone }
     this.bin.param_encrypt(param, ['identityNo'])
     const result = await this.bin.service_soa_allow('MemberService', 'setRealName', param, '30007', { identityNo })
     this.bin.param_decrypt(result, ['identityNo'])
-    return result as { bizUserId: string, name: string, identityType: 1, identityNo: string, identityBeginDate: string, identityEndDate: string, address: string, professionNo: string, telephone: string }
+    return result as {
+      bizUserId: string
+      name: string
+      identityType: 1
+      identityNo: string
+      identityBeginDate: string
+      identityEndDate: string
+      address: string
+      professionNo: string
+      telephone: string
+    }
   }
 
   /**
@@ -144,7 +162,7 @@ export class AllinPayMemberService extends AllinPayService {
    * @param professionNo 职业
    * @param telephone 联系电话
    */
-  async setBankInfo (bizUserId: string, identityBeginDate: string, identityEndDate: string, address: string, professionNo: string, telephone: string) {
+  async setBankInfo(bizUserId: string, identityBeginDate: string, identityEndDate: string, address: string, professionNo: string, telephone: string) {
     const param = { bizUserId, identityBeginDate, identityEndDate, address, professionNo, telephone }
     const result = await this.bin.service_soa('MemberService', 'fillMemberInfoForHT', param)
     return result as { bizUserId: string }
@@ -163,11 +181,11 @@ export class AllinPayMemberService extends AllinPayService {
    * @param companyBasicInfo 企业详细信息
    * @param isAuth 是否进行线上认证
    */
-  async setCompanyInfo (bizUserId: string, companyBasicInfo: AllinPay.CompanyBasicInfo, isAuth: boolean = true) {
+  async setCompanyInfo(bizUserId: string, companyBasicInfo: AllinPay.CompanyBasicInfo, isAuth: boolean = true) {
     this.bin.param_encrypt(companyBasicInfo, ['accountNo', 'legalIds'])
     const param = { bizUserId, companyBasicInfo, isAuth, backUrl: this.config.notify + 'set_company_info' }
     const result = await this.bin.service_soa('MemberService', 'setCompanyInfo', param)
-    return result as { bizUserId: string, phone: string, identityType: 1, identityNo: string }
+    return result as { bizUserId: string; phone: string; identityType: 1; identityNo: string }
   }
 
   /**
@@ -177,11 +195,11 @@ export class AllinPayMemberService extends AllinPayService {
    * @param bizUserId 商户系统用户标识 商户系统中唯一编号
    * @param acctOrgType 0-通联 1-华通银行 默认1
    */
-  async getMemberInfo (bizUserId: string, acctOrgType: number) {
+  async getMemberInfo(bizUserId: string, acctOrgType: number) {
     const param = { bizUserId, acctOrgType }
     const result = await this.bin.service_soa('MemberService', 'getMemberInfo', param)
     this.bin.param_decrypt(result, ['memberInfo.identityCardNo'])
-    return result as { bizUserId: string, memberType: AllinPay.MemberType, memberInfo: AllinPay.MemberInfo }
+    return result as { bizUserId: string; memberType: AllinPay.MemberType; memberInfo: AllinPay.MemberInfo }
   }
 
   /**
@@ -191,10 +209,10 @@ export class AllinPayMemberService extends AllinPayService {
    * 注：测试环境下，只支持 622848、622849 开头的 19 位银行卡（后 13 位可以随便指定）
    * @param cardNo 银行卡号
    */
-  async getBankCardBin (cardNo: string) {
+  async getBankCardBin(cardNo: string) {
     const param = { cardNo }
     this.bin.param_encrypt(param, ['cardNo'])
-    const result = await this.bin.service_soa('MemberService', 'getBankCardBin', param,)
+    const result = await this.bin.service_soa('MemberService', 'getBankCardBin', param)
     return result as { cardBinInfo: AllinPay.CardBinInfo }
   }
 
@@ -214,11 +232,11 @@ export class AllinPayMemberService extends AllinPayService {
    * @param name 姓名
    * @param identityNo 证件号，目前填身份证号
    */
-  async applyBindBankCard (bizUserId: string, cardNo: string, name: string, identityNo: string) {
+  async applyBindBankCard(bizUserId: string, cardNo: string, name: string, identityNo: string) {
     const param = { bizUserId, cardNo, name, identityNo, cardCheck: 1, identityType: 1 }
     this.bin.param_encrypt(param, ['cardNo', 'identityNo'])
     const result = await this.bin.service_soa_allow('MemberService', 'applyBindBankCard', param, '30017')
-    return result as { bizUserId: string, bankName: string, bankCode: string, cardType: 1 | 2 }
+    return result as { bizUserId: string; bankName: string; bankCode: string; cardType: 1 | 2 }
   }
 
   /**
@@ -231,12 +249,12 @@ export class AllinPayMemberService extends AllinPayService {
    * @param bizUserId 商户系统用户标识，商户系统中唯一编号
    * @param cardNo 银行卡号
    */
-  async unbindBankCard (bizUserId: string, cardNo: string) {
+  async unbindBankCard(bizUserId: string, cardNo: string) {
     const param = { bizUserId, cardNo }
     this.bin.param_encrypt(param, ['cardNo'])
     const result = await this.bin.service_soa('MemberService', 'unbindBankCard', param)
     this.bin.param_decrypt(result, ['cardNo'])
-    return result as { bizUserId: string, cardNo: string }
+    return result as { bizUserId: string; cardNo: string }
   }
 
   /**
@@ -244,10 +262,10 @@ export class AllinPayMemberService extends AllinPayService {
    * 该接口用于查询用户已绑定的某张银行卡，或已绑定的全部银行卡，响应报文支持返回多条记录。
    * @param bizUserId 商户系统用户标识，商户系统中唯一编号
    */
-  async queryBankCard (bizUserId: string) {
+  async queryBankCard(bizUserId: string) {
     const param = { bizUserId }
     const result = await this.bin.service_soa('MemberService', 'queryBankCard', param)
-    _.forEach(result.bindCardList, v => this.bin.param_decrypt(v, ['bankCardNo']))
+    _.forEach(result.bindCardList, (v) => this.bin.param_decrypt(v, ['bankCardNo']))
     return result as { bindCardList: AllinPay.BankCardInfo[] }
   }
 
@@ -257,7 +275,7 @@ export class AllinPayMemberService extends AllinPayService {
    * 前提条件：个人会员（创建会员、实名认证、绑定手机号），企业会员（创建会员、设置企业信息-审核通过、绑定手机号）
    * @param bizUserId 商户系统用户标识，商户系统中唯一编号
    */
-  async createBankSubAcctNo (bizUserId: string) {
+  async createBankSubAcctNo(bizUserId: string) {
     const acctOrgType = 1
     const param = { bizUserId, accountSetNo: this.config.accountSetNo, acctOrgType }
     const result = await this.bin.service_soa('MemberService', 'createBankSubAcctNo', param)
@@ -266,7 +284,7 @@ export class AllinPayMemberService extends AllinPayService {
       result.subAcctNo = res.memberInfo.subAcctNo
     }
     result.acctOrgType = param.acctOrgType
-    return result as { subAcctNo: string, bizUserId: string, accountSetNo: string, acctOrgType: number }
+    return result as { subAcctNo: string; bizUserId: string; accountSetNo: string; acctOrgType: number }
   }
 
   /**
@@ -281,7 +299,7 @@ export class AllinPayMemberService extends AllinPayService {
    * @param bizUserId 商户系统用户标识，商户系统中唯一编号
    * @param jumpUrl 跳转的链接
    */
-  async signContractUrl (bizUserId: string, jumpUrl: string) {
+  async signContractUrl(bizUserId: string, jumpUrl: string) {
     const param = { bizUserId, source: 1, jumpUrl, backUrl: this.config.notify + 'sign_contract' }
     return await this.bin.gateway_url('/yungateway/member/signContract.html', 'MemberService', 'signContract', param)
   }
@@ -296,10 +314,10 @@ export class AllinPayMemberService extends AllinPayService {
    * @param subAcctNo 会员子账号
    * @param jumpUrl 签订之后，跳转返回的页面地址
    */
-  async getSubAcctNoInfoForHT (bizUserId: string, subAcctNo: string, jumpUrl: string) {
+  async getSubAcctNoInfoForHT(bizUserId: string, subAcctNo: string, jumpUrl: string) {
     const param = { bizUserId, subAcctNo, jumpUrl, backUrl: this.config.notify + 'sub_acct_info' }
     const result = await this.bin.service_soa('MemberService', 'getSubAcctNoInfoForHT', param)
-    return result as { bizUserId: string, subAcctNo: string, redirectUrl: string }
+    return result as { bizUserId: string; subAcctNo: string; redirectUrl: string }
   }
 
   /**
@@ -310,17 +328,16 @@ export class AllinPayMemberService extends AllinPayService {
    * 一个微信服务商商户号可关联多个微信子商户号
    * @param operationType 商户系统用户标识，商户系统中唯一编号
    */
-  async wxSubMchtService (operationType: 'query' | 'set' | 'delete',) {
+  async wxSubMchtService(operationType: 'query' | 'set' | 'delete') {
     const param = {
       operationType,
       bizUserId: '#yunBizUserId_B2C#',
       mchtId: this.config.wxIsvMiniPay.mchId,
       appid: this.config.wxIsvMiniPay.appWxaId,
       subMchtId: this.config.wxSubMiniPay.mchId,
-      subAppId: this.config.wxSubMiniPay.appWxaId
+      subAppId: this.config.wxSubMiniPay.appWxaId,
     }
     const result = await this.bin.service_soa_allow('MemberService', 'wxSubMchtService', param, '9000')
     return result as { bizUserId: string }
   }
-
 }

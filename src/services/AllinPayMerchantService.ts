@@ -5,25 +5,24 @@ import { AllinPayService } from '../libs/AllinPayService'
  * 其它辅助类接口
  */
 export class AllinPayMerchantService extends AllinPayService {
-
   /**
    * 平台头寸查询
    * 根据平台商户管理模式不同，支持查询通联通头寸和电子账户头寸
    */
-  async queryReserveFundBalance () {
+  async queryReserveFundBalance() {
     const param = { sysid: this.config.sysId, fundAcctSys: 1 }
     const result = await this.bin.service_soa('MerchantService', 'queryReserveFundBalance', param)
-    return $.camelCaseKeys(result) as { accountNo: string, accountName: string, balance: number, defClr: number }
+    return $.camelCaseKeys(result) as { accountNo: string; accountName: string; balance: number; defClr: number }
   }
 
   /**
    * 平台账户集余额查询
    * 支持查询平台在通商云系统中各账户集余额
    */
-  async queryMerchantBalance (accountSetNo = this.config.accountSetNo) {
+  async queryMerchantBalance(accountSetNo = this.config.accountSetNo) {
     const param = { accountSetNo }
     const result = await this.bin.service_soa('MerchantService', 'queryMerchantBalance', param)
-    return result as { allAmount: number, freezeAmount: number }
+    return result as { allAmount: number; freezeAmount: number }
   }
 
   /**
@@ -34,7 +33,7 @@ export class AllinPayMerchantService extends AllinPayService {
    * @param acctNo 银行账户号
    * @param acctName 银行账户名
    */
-  async queryBankBalance (acctNo: string, acctName: string) {
+  async queryBankBalance(acctNo: string, acctName: string) {
     const param = { acctNo, acctName, acctOrgType: 1 }
     const result = await this.bin.service_soa('MerchantService', 'queryBankBalance', param)
     return result as { balance: number }
@@ -43,7 +42,7 @@ export class AllinPayMerchantService extends AllinPayService {
   /**
    * 直接查询平台银行存管账户余额查询
    */
-  async queryBankBalancePlatform () {
+  async queryBankBalancePlatform() {
     const { acctNo, acctName } = this.config.bankAcct
     // 如果银行账户不存在，则返回balance为-1
     if (!acctNo) return { balance: -1 }
@@ -62,10 +61,9 @@ export class AllinPayMerchantService extends AllinPayService {
    * @param date 对账文件日期 yyyyMMdd
    * @param fileType 文件类型  1-明细 2-汇总 默认为 1
    */
-  async getCheckAccountFile (date: string, fileType: 1 | 2) {
+  async getCheckAccountFile(date: string, fileType: 1 | 2) {
     const param = { date, fileType }
     const result = await this.bin.service_soa('MerchantService', 'getCheckAccountFile', param)
     return result as { url: string }
   }
-
 }

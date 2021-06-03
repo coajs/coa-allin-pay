@@ -19,7 +19,6 @@ import { AllinPay } from '../typings'
  *—
  */
 export class AllinPayOrderService extends AllinPayService {
-
   /**
    * 消费申请(微信小程序)
    * 1) 消费申请接口请求响应成功后，根据支付方式确认是否调用“支付确认”接口
@@ -31,7 +30,7 @@ export class AllinPayOrderService extends AllinPayService {
    * @param openId 微信小程序的openId
    * @param summary 订单摘要信息
    */
-  async consumeApplyWxa (bizOrderNo: string, payerId: string, openId: string, amount: number, summary = '') {
+  async consumeApplyWxa(bizOrderNo: string, payerId: string, openId: string, amount: number, summary = '') {
     const param = {
       payerId,
       recieverId: '#yunBizUserId_B2C#',
@@ -45,8 +44,8 @@ export class AllinPayOrderService extends AllinPayService {
           amount,
           limitPay: '',
           acct: openId,
-          cusip: '0.0.0.0'
-        }
+          cusip: '0.0.0.0',
+        },
       },
       validateType: 0,
       summary: summary.slice(0, 20),
@@ -54,15 +53,14 @@ export class AllinPayOrderService extends AllinPayService {
       source: 1,
       industryCode: '1910',
       industryName: '其他',
-      backUrl: this.config.notify + 'trade_pay'
+      backUrl: this.config.notify + 'trade_pay',
     }
     const result = await this.bin.service_soa('OrderService', 'consumeApply', param)
 
     // 如果支付状态为失败
-    if (result.payStatus === 'fail')
-      die.hint('支付消费异常：' + result.payFailMessage)
+    if (result.payStatus === 'fail') die.hint('支付消费异常：' + result.payFailMessage)
 
-    return result as { bizUserId: string, bizOrderNo: string, orderNo: string, payStatus: 'success' | 'pending', payInfo: object }
+    return result as { bizUserId: string; bizOrderNo: string; orderNo: string; payStatus: 'success' | 'pending'; payInfo: object }
   }
 
   /**
@@ -73,7 +71,7 @@ export class AllinPayOrderService extends AllinPayService {
    * @param openId 微信小程序的openId
    * @param summary 摘要
    */
-  async consumeApplyWxaIsv (bizOrderNo: string, payerId: string, openId: string, amount: number, summary = '') {
+  async consumeApplyWxaIsv(bizOrderNo: string, payerId: string, openId: string, amount: number, summary = '') {
     const param = {
       payerId,
       recieverId: '#yunBizUserId_B2C#',
@@ -87,8 +85,8 @@ export class AllinPayOrderService extends AllinPayService {
           amount,
           limitPay: '',
           acct: openId,
-          cusip: '0.0.0.0'
-        }
+          cusip: '0.0.0.0',
+        },
       },
       validateType: 0,
       summary: summary.slice(0, 20),
@@ -96,15 +94,14 @@ export class AllinPayOrderService extends AllinPayService {
       source: 1,
       industryCode: '1910',
       industryName: '其他',
-      backUrl: this.config.notify + 'trade_pay'
+      backUrl: this.config.notify + 'trade_pay',
     }
     const result = await this.bin.service_soa('OrderService', 'consumeApply', param)
 
     // 如果支付状态为失败
-    if (result.payStatus === 'fail')
-      die.hint('支付消费异常：' + result.payFailMessage)
+    if (result.payStatus === 'fail') die.hint('支付消费异常：' + result.payFailMessage)
 
-    return result as { bizUserId: string, bizOrderNo: string, orderNo: string, payStatus: 'success' | 'pending', payInfo: object }
+    return result as { bizUserId: string; bizOrderNo: string; orderNo: string; payStatus: 'success' | 'pending'; payInfo: object }
   }
 
   /**
@@ -116,7 +113,7 @@ export class AllinPayOrderService extends AllinPayService {
    * @param summary 摘要
    * @param extendOption 扩展配置
    */
-  async consumeApplyWxaOrg (bizOrderNo: string, payerId: string, openId: string, amount: number, summary = '', extendOption: { [key: string]: any } = {}) {
+  async consumeApplyWxaOrg(bizOrderNo: string, payerId: string, openId: string, amount: number, summary = '', extendOption: { [key: string]: any } = {}) {
     const param = {
       payerId,
       recieverId: '#yunBizUserId_B2C#',
@@ -130,7 +127,7 @@ export class AllinPayOrderService extends AllinPayService {
           limitPay: '',
           amount,
           acct: openId,
-        }
+        },
       },
       validateType: 0,
       summary: summary.slice(0, 20),
@@ -138,26 +135,24 @@ export class AllinPayOrderService extends AllinPayService {
       source: 1,
       industryCode: '1910',
       industryName: '其他',
-      backUrl: this.config.notify + 'trade_pay'
+      backUrl: this.config.notify + 'trade_pay',
     }
     const result = await this.bin.service_soa('OrderService', 'consumeApply', param)
 
     // 如果支付状态为失败
-    if (result.payStatus === 'fail')
-      die.hint('支付消费异常：' + result.payFailMessage)
+    if (result.payStatus === 'fail') die.hint('支付消费异常：' + result.payFailMessage)
 
     // 处理payInfo
-    if (typeof result.payInfo === 'string')
-      result.payInfo = JSON.parse(result.payInfo)
+    if (typeof result.payInfo === 'string') result.payInfo = JSON.parse(result.payInfo)
 
-    return result as { bizUserId: string, bizOrderNo: string, orderNo: string, payStatus: 'success' | 'pending', payInfo: object }
+    return result as { bizUserId: string; bizOrderNo: string; orderNo: string; payStatus: 'success' | 'pending'; payInfo: object }
   }
 
   /**
    * 查询订单状态
    * @param bizOrderNo 商户订单号（支付订单）
    */
-  async getOrderDetail (bizOrderNo: string) {
+  async getOrderDetail(bizOrderNo: string) {
     const param = { bizOrderNo }
     const result = await this.bin.service_soa('OrderService', 'getOrderDetail', param)
     return result as AllinPay.OrderDetail
@@ -182,32 +177,31 @@ export class AllinPayOrderService extends AllinPayService {
    * @param amount 订单金额
    * @param type 退款类型 trade_refund transfer_refund
    */
-  async refund (bizOrderNo: string, oriBizOrderNo: string, bizUserId: string, amount: number, type: 'trade_refund' | 'transfer_refund') {
+  async refund(bizOrderNo: string, oriBizOrderNo: string, bizUserId: string, amount: number, type: 'trade_refund' | 'transfer_refund') {
     const param = {
       bizOrderNo,
       oriBizOrderNo,
       bizUserId,
       amount,
       refundType: 'D0',
-      backUrl: this.config.notify + type
+      backUrl: this.config.notify + type,
     }
     const result = await this.bin.service_soa('OrderService', 'refund', param)
 
     // 如果支付状态为失败
-    if (result.payStatus === 'fail')
-      die.hint('退款申请异常：' + result.payFailMessage)
+    if (result.payStatus === 'fail') die.hint('退款申请异常：' + result.payFailMessage)
 
-    return result as { orderNo: string, bizOrderNo: string, payStatus: 'success' | 'pending', amount: number }
+    return result as { orderNo: string; bizOrderNo: string; payStatus: 'success' | 'pending'; amount: number }
   }
 
   // 交易退款
-  async trade_refund (refundId: string, orderId: string, bizUserId: string, amount: number) {
-    return this.refund(refundId, orderId, bizUserId, amount, 'trade_refund')
+  async trade_refund(refundId: string, orderId: string, bizUserId: string, amount: number) {
+    return await this.refund(refundId, orderId, bizUserId, amount, 'trade_refund')
   }
 
   // 平台转账退款
-  async transfer_refund (transferRefundId: string, transferId: string, amount: number) {
-    return this.refund(transferRefundId, transferId, '#yunBizUserId_B2C#', amount, 'transfer_refund')
+  async transfer_refund(transferRefundId: string, transferId: string, amount: number) {
+    return await this.refund(transferRefundId, transferId, '#yunBizUserId_B2C#', amount, 'transfer_refund')
   }
 
   /**
@@ -235,8 +229,7 @@ export class AllinPayOrderService extends AllinPayService {
    * @param name 姓名
    * @param amount 订单金额
    */
-  async withdrawApplyHT (bizOrderNo: string, bizUserId: string, subAcctNo: string, bankCardNo: string, name: string, amount: number) {
-
+  async withdrawApplyHT(bizOrderNo: string, bizUserId: string, subAcctNo: string, bankCardNo: string, name: string, amount: number) {
     const accountSetNo = this.config.accountSetNo
     const withdrawType = 'D0'
 
@@ -256,30 +249,36 @@ export class AllinPayOrderService extends AllinPayService {
           PAYEE_ACCT_NAME: name,
           AMOUNT: amount,
           SUMMARY: '',
-          SIGNED_MSG_MER: this.bin.bank_signer(bankCardNo, name, amount.toString())
-        }
+          SIGNED_MSG_MER: this.bin.bank_signer(bankCardNo, name, amount.toString()),
+        },
       },
       source: 1,
       industryCode: '1910',
       industryName: '其他',
-      backUrl: this.config.notify + 'withdraw'
+      backUrl: this.config.notify + 'withdraw',
     }
     this.bin.param_encrypt(param, ['bankCardNo'])
 
     const result = await this.bin.service_soa('OrderService', 'withdrawApply', param)
 
     // 如果支付状态为失败
-    if (result.payStatus === 'fail')
-      die.hint('提现申请异常：' + result.payFailMessage)
+    if (result.payStatus === 'fail') die.hint('提现申请异常：' + result.payFailMessage)
 
     _.assign(result, { accountSetNo, withdrawType })
 
-    return result as { bizUserId: string, bizOrderNo: string, orderNo: string, accountSetNo: string, withdrawType: string, payStatus: 'success' | 'pending', payInfo: string }
+    return result as {
+      bizUserId: string
+      bizOrderNo: string
+      orderNo: string
+      accountSetNo: string
+      withdrawType: string
+      payStatus: 'success' | 'pending'
+      payInfo: string
+    }
   }
 
   // 申请提现（TLT存管模式）
-  async withdrawApplyTLT (bizOrderNo: string, bizUserId: string, bankCardNo: string, amount: number) {
-
+  async withdrawApplyTLT(bizOrderNo: string, bizUserId: string, bankCardNo: string, amount: number) {
     const accountSetNo = this.config.accountSetNo
     const withdrawType = 'D0'
 
@@ -295,24 +294,31 @@ export class AllinPayOrderService extends AllinPayService {
       payMethod: {
         WITHDRAW_TLT: {
           payTypeName: 'withdraw_tlt',
-        }
+        },
       },
       source: 1,
       industryCode: '1910',
       industryName: '其他',
-      backUrl: this.config.notify + 'withdraw'
+      backUrl: this.config.notify + 'withdraw',
     }
     this.bin.param_encrypt(param, ['bankCardNo'])
 
     const result = await this.bin.service_soa('OrderService', 'withdrawApply', param)
 
     // 如果支付状态为失败
-    if (result.payStatus === 'fail')
-      die.hint('提现申请异常：' + result.payFailMessage)
+    if (result.payStatus === 'fail') die.hint('提现申请异常：' + result.payFailMessage)
 
     _.assign(result, { accountSetNo, withdrawType })
 
-    return result as { bizUserId: string, bizOrderNo: string, orderNo: string, accountSetNo: string, withdrawType: string, payStatus: 'success' | 'pending', payInfo: string }
+    return result as {
+      bizUserId: string
+      bizOrderNo: string
+      orderNo: string
+      accountSetNo: string
+      withdrawType: string
+      payStatus: 'success' | 'pending'
+      payInfo: string
+    }
   }
 
   /**
@@ -326,7 +332,7 @@ export class AllinPayOrderService extends AllinPayService {
    * @param targetBizUserId 目标商户系统用户标识，商户系统中唯一编号。
    * @param amount 金额
    */
-  async applicationTransfer (bizTransferNo: string, targetBizUserId: string, amount: number) {
+  async applicationTransfer(bizTransferNo: string, targetBizUserId: string, amount: number) {
     const param = {
       bizTransferNo,
       sourceAccountSetNo: '100001',
@@ -336,17 +342,17 @@ export class AllinPayOrderService extends AllinPayService {
     }
     const result = await this.bin.service_soa('OrderService', 'applicationTransfer', param)
     _.defaults(result, param)
-    return result as { transferNo: string, bizTransferNo: string, amount: number, sourceAccountSetNo: string, targetAccountSetNo: string }
+    return result as { transferNo: string; bizTransferNo: string; amount: number; sourceAccountSetNo: string; targetAccountSetNo: string }
   }
 
   /**
    * 查询用户账户余额
    * @param bizUserId
    */
-  async queryBalance (bizUserId: string) {
+  async queryBalance(bizUserId: string) {
     const param = { bizUserId, accountSetNo: this.config.accountSetNo }
     const result = await this.bin.service_soa('OrderService', 'queryBalance', param)
-    return result as { allAmount: number, freezenAmount: number }
+    return result as { allAmount: number; freezenAmount: number }
   }
 
   /**
@@ -358,16 +364,15 @@ export class AllinPayOrderService extends AllinPayService {
    * @param startPosition 起始位置，取值>0 eg：查询第 11 条到 20 条的 记录（start =11）
    * @param queryNum 查询条数，eg：查询第 11 条到 20 条的 记录（queryNum =10）， 查询条数最多 5000
    */
-  async queryInExpDetail (bizUserId: string, dateStart: dayjs.Dayjs, dateEnd: dayjs.Dayjs, startPosition: number = 1, queryNum: number = 5000) {
+  async queryInExpDetail(bizUserId: string, dateStart: dayjs.Dayjs, dateEnd: dayjs.Dayjs, startPosition: number = 1, queryNum: number = 5000) {
     const param = {
       bizUserId,
       startPosition,
       queryNum,
       dateStart: dateStart.format('YYYY-MM-DD'),
-      dateEnd: dateEnd.format('YYYY-MM-DD')
+      dateEnd: dateEnd.format('YYYY-MM-DD'),
     }
     const result = await this.bin.service_soa('OrderService', 'queryInExpDetail', param)
-    return result as { totalNum: string, inExpDetail: AllinPay.InExpDetail[], bizUserId: string }
+    return result as { totalNum: string; inExpDetail: AllinPay.InExpDetail[]; bizUserId: string }
   }
-
 }
