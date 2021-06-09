@@ -66,4 +66,17 @@ export class AllinPayMerchantService extends AllinPayService {
     const result = await this.bin.service_soa('MerchantService', 'getCheckAccountFile', param)
     return result as { url: string }
   }
+
+  /**
+   * 电子回单下载
+   * 通联存管电子回单
+   * 用于交易完成的订单支持下载电子回单，目前支持的订单: 通联通代付、通联通快捷协议支付、通联通汇入金。
+   * 电子回单文件名格式:随机token数字.pdf，返回url带token有效期，url仅支持打开一次，若要重复下载需重新请求，且控制同一订单 1 分钟内仅允许请求一次。
+   * @param bizOrderNo 商户订单号(支付订单)
+   */
+  async eleReceiptDownload(bizOrderNo: string) {
+    const param = { bizOrderNo }
+    const result = await this.bin.service_soa('MerchantService', 'eleReceiptDownload', param)
+    return result as { url: string }
+  }
 }
