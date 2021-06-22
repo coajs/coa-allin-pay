@@ -1,5 +1,5 @@
 import { die } from 'coa-error'
-import { _, dayjs } from 'coa-helper'
+import { dayjs, _ } from 'coa-helper'
 import { AllinPayService } from '../libs/AllinPayService'
 import { AllinPay } from '../typings'
 
@@ -123,7 +123,7 @@ export class AllinPayOrderService extends AllinPayService {
       payMethod: {
         WECHATPAY_MINIPROGRAM_ORG: {
           vspCusid: extendOption?.vspCusId || this.config.wxOrgMiniPay.vspCusId,
-          subAppId: extendOption?.subAppWxaId || this.config.wxOrgMiniPay.subAppWxaId,
+          subAppid: extendOption?.subAppWxaId || this.config.wxOrgMiniPay.subAppWxaId,
           limitPay: '',
           amount,
           acct: openId,
