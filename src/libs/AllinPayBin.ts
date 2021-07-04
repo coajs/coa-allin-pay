@@ -11,7 +11,10 @@ interface Dic<T> {
 }
 
 export class AllinPayBin {
+  // 基本配置
   readonly config: AllinPay.Config
+  // 触发事件过长的阈值
+  protected readonly thresholdTooLong = 2 * 1000
 
   constructor(config: AllinPay.Config) {
     this.config = config
@@ -22,14 +25,21 @@ export class AllinPayBin {
     // 组装参数并请求
     const params = await this.getParams({ service, method, param })
 
+    // 请求并记录开始、结束时间
+    const startAt = Date.now()
     const res = await axios.get(this.config.endpoint + '/service/soa', { params })
+    const endAt = Date.now()
 
+    // 触发请求事件
     this.onRequest(params, res.data)
+    // 触发请求时间过长事件
+    if (endAt - startAt > this.thresholdTooLong) this.onRequestTooLong(param, res.data, { startAt, endAt })
 
     // 处理结果
     try {
       return this.handleResult(res)
     } catch (e) {
+      // 触发请求错误事件
       this.onRequestError(params, res.data, e)
       throw e
     }
@@ -99,6 +109,9 @@ export class AllinPayBin {
 
   // 请求失败
   onRequestError(param: any, response: any, error: any) {}
+
+  // 请求时间过长
+  onRequestTooLong(param: any, response: any, time: { startAt: number; endAt: number }) {}
 
   // 敏感信息加密
   private rsa_encrypt(data: string) {
