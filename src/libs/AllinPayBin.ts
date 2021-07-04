@@ -33,7 +33,7 @@ export class AllinPayBin {
     // 触发请求事件
     this.onRequest(params, res.data)
     // 触发请求时间过长事件
-    if (endAt - startAt > this.thresholdTooLong) this.onRequestTooLong(param, res.data, { startAt, endAt })
+    if (endAt - startAt > this.thresholdTooLong) this.onRequestTooLong(params, res.data, { startAt, endAt })
 
     // 处理结果
     try {
