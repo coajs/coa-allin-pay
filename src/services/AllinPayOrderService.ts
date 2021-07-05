@@ -124,7 +124,7 @@ export class AllinPayOrderService extends AllinPayService {
         WECHATPAY_MINIPROGRAM_ORG: {
           vspCusid: extendOption?.vspCusId || this.config.wxOrgMiniPay.vspCusId,
           subAppid: extendOption?.subAppWxaId || this.config.wxOrgMiniPay.subAppWxaId,
-          limitPay: '',
+          limitPay: extendOption?.limitPay || this.config.wxOrgMiniPay.limitPay,
           amount,
           acct: openId,
         },

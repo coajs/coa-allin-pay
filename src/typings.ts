@@ -16,6 +16,7 @@ const config = {
   wxOrgMiniPay: {
     vspCusId: '',
     subAppWxaId: '',
+    limitPay: '',
   },
   wxSubMiniPay: {
     mchId: '',
