@@ -113,7 +113,15 @@ export class AllinPayOrderService extends AllinPayService {
    * @param summary 摘要
    * @param extendOption 扩展配置
    */
-  async consumeApplyWxaOrg(bizOrderNo: string, payerId: string, openId: string, amount: number, summary = '', goodsName: string, extendOption: { [key: string]: any } = {}) {
+  async consumeApplyWxaOrg(
+    bizOrderNo: string,
+    payerId: string,
+    openId: string,
+    amount: number,
+    goodsName: string,
+    summary = '',
+    extendOption: { [key: string]: any } = {}
+  ) {
     const param = {
       payerId,
       recieverId: '#yunBizUserId_B2C#',
