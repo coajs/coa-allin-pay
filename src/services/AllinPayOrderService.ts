@@ -136,7 +136,7 @@ export class AllinPayOrderService extends AllinPayService {
       industryCode: '1910',
       industryName: '其他',
       backUrl: this.config.notify + 'trade_pay',
-      goodsName,
+      goodsName: goodsName || '订单' + bizOrderNo,
     }
     const result = await this.bin.service_soa('OrderService', 'consumeApply', param)
 
