@@ -158,6 +158,59 @@ export class AllinPayOrderService extends AllinPayService {
   }
 
   /**
+   * 消费申请(H5通联通集团模式)
+   * @param payerId 付款方商户系统用户标识，商户 系统中唯一编号。
+   * @param bizOrderNo 商户订单号（支付订单）
+   * @param amount 订单金额
+   * @param openId 微信公众号的openId
+   * @param summary 摘要
+   * @param extendOption 扩展配置
+   */
+  async consumeApplyWxbOrg(
+    bizOrderNo: string,
+    payerId: string,
+    openId: string,
+    amount: number,
+    goodsName: string,
+    summary = '',
+    extendOption: { [key: string]: any } = {}
+  ) {
+    const param = {
+      payerId,
+      recieverId: '#yunBizUserId_B2C#',
+      bizOrderNo,
+      amount,
+      fee: 0,
+      payMethod: {
+        WECHAT_PUBLIC_ORG: {
+          vspCusid: extendOption?.vspCusId || this.config.wxOrgMiniPay.vspCusId,
+          subAppid: extendOption?.subAppWxaId || this.config.wxOrgMiniPay.subAppWxaId,
+          limitPay: extendOption?.limitPay || this.config.wxOrgMiniPay.limitPay,
+          amount,
+          acct: openId,
+        },
+      },
+      validateType: 0,
+      summary: summary.slice(0, 20),
+      extendInfo: summary.slice(0, 50),
+      source: 1,
+      industryCode: '1910',
+      industryName: '其他',
+      backUrl: this.config.notify + 'trade_pay',
+      goodsName: goodsName || '订单' + bizOrderNo,
+    }
+    const result = await this.bin.service_soa('OrderService', 'consumeApply', param)
+
+    // 如果支付状态为失败
+    if (result.payStatus === 'fail') die.hint('支付消费异常：' + result.payFailMessage)
+
+    // 处理payInfo
+    if (typeof result.payInfo === 'string') result.payInfo = JSON.parse(result.payInfo)
+
+    return result as { bizUserId: string; bizOrderNo: string; orderNo: string; payStatus: 'success' | 'pending'; payInfo: object }
+  }
+
+  /**
    * 消费申请(收银宝H5集团模式)
    * @param payerId 付款方商户系统用户标识，商户 系统中唯一编号。
    * @param bizOrderNo 商户订单号（支付订单）
