@@ -46,7 +46,7 @@ export class AllinPayBin {
   }
 
   // 发送允许部分异常的service_soa请求
-  async service_soa_allow(service: string, method: string, param: Dic<any>, allow: string, data: object = {}) {
+  async service_soa_allow(service: string, method: string, param: Dic<any>, allow: string, data: Record<string, any> = {}) {
     // 处理异常结果
     return await this.service_soa(service, method, param).catch((e) => {
       if (e.mark !== allow) throw e
@@ -79,7 +79,7 @@ export class AllinPayBin {
   }
 
   // 华通银行签名
-  public bank_signer(PAYEE_ACCT_NO: string, PAYEE_ACCT_NAME: string, AMOUNT: string, SUMMARY: string = '') {
+  public bank_signer(PAYEE_ACCT_NO: string, PAYEE_ACCT_NAME: string, AMOUNT: string, SUMMARY = '') {
     const str = JSON.stringify({ AMOUNT, PAYEE_ACCT_NAME, PAYEE_ACCT_NO, SUMMARY })
     return createSign('rsa-sha1').update(str, 'utf8').sign(this.config.bankPrivateKey, 'base64')
   }
@@ -102,15 +102,19 @@ export class AllinPayBin {
   }
 
   // 推送返回记录
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onBackReceive(body: any) {}
 
   // 请求记录
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onRequest(param: any, response: any) {}
 
   // 请求失败
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onRequestError(param: any, response: any, error: any) {}
 
   // 请求时间过长
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onRequestTooLong(param: any, response: any, time: { startAt: number; endAt: number }) {}
 
   // 敏感信息加密

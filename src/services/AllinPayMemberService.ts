@@ -181,7 +181,7 @@ export class AllinPayMemberService extends AllinPayService {
    * @param companyBasicInfo 企业详细信息
    * @param isAuth 是否进行线上认证
    */
-  async setCompanyInfo(bizUserId: string, companyBasicInfo: AllinPay.CompanyBasicInfo, isAuth: boolean = true) {
+  async setCompanyInfo(bizUserId: string, companyBasicInfo: AllinPay.CompanyBasicInfo, isAuth = true) {
     this.bin.param_encrypt(companyBasicInfo, ['accountNo', 'legalIds'])
     const param = { bizUserId, companyBasicInfo, isAuth, backUrl: this.config.notify + 'set_company_info' }
     const result = await this.bin.service_soa('MemberService', 'setCompanyInfo', param)
