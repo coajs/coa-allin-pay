@@ -112,6 +112,7 @@ export class AllinPayOrderService extends AllinPayService {
    * @param openId 微信小程序的openId
    * @param summary 摘要
    * @param extendOption 扩展配置
+   * @param extendParams 扩展参数
    */
   async consumeApplyWxaOrg(
     bizOrderNo: string,
@@ -120,7 +121,8 @@ export class AllinPayOrderService extends AllinPayService {
     amount: number,
     goodsName: string,
     summary = '',
-    extendOption: { [key: string]: any } = {}
+    extendOption: { [key: string]: any } = {},
+    extendParams: { frontUrl?: string } = {}
   ) {
     const param = {
       payerId,
@@ -145,6 +147,7 @@ export class AllinPayOrderService extends AllinPayService {
       industryName: '其他',
       backUrl: this.config.notify + 'trade_pay',
       goodsName: goodsName || '订单' + bizOrderNo,
+      ...extendParams,
     }
     const result = await this.bin.service_soa('OrderService', 'consumeApply', param)
 
@@ -165,6 +168,7 @@ export class AllinPayOrderService extends AllinPayService {
    * @param openId 微信公众号的openId
    * @param summary 摘要
    * @param extendOption 扩展配置
+   * @param extendParams 扩展参数
    */
   async consumeApplyWxbOrg(
     bizOrderNo: string,
@@ -173,7 +177,8 @@ export class AllinPayOrderService extends AllinPayService {
     amount: number,
     goodsName: string,
     summary = '',
-    extendOption: { [key: string]: any } = {}
+    extendOption: { [key: string]: any } = {},
+    extendParams: { frontUrl?: string } = {}
   ) {
     const param = {
       payerId,
@@ -198,6 +203,7 @@ export class AllinPayOrderService extends AllinPayService {
       industryName: '其他',
       backUrl: this.config.notify + 'trade_pay',
       goodsName: goodsName || '订单' + bizOrderNo,
+      ...extendParams,
     }
     const result = await this.bin.service_soa('OrderService', 'consumeApply', param)
 
@@ -217,8 +223,17 @@ export class AllinPayOrderService extends AllinPayService {
    * @param amount 订单金额
    * @param summary 摘要
    * @param extendOption 扩展配置
+   * @param extendParams 扩展参数
    */
-  async consumeApplyH5VspOrg(bizOrderNo: string, payerId: string, amount: number, goodsName: string, summary = '', extendOption: { [key: string]: any } = {}) {
+  async consumeApplyH5VspOrg(
+    bizOrderNo: string,
+    payerId: string,
+    amount: number,
+    goodsName: string,
+    summary = '',
+    extendOption: { [key: string]: any } = {},
+    extendParams: { frontUrl?: string } = {}
+  ) {
     const param = {
       payerId,
       recieverId: '#yunBizUserId_B2C#',
@@ -240,6 +255,7 @@ export class AllinPayOrderService extends AllinPayService {
       industryName: '其他',
       backUrl: this.config.notify + 'trade_pay',
       goodsName: goodsName || '订单' + bizOrderNo,
+      ...extendParams,
     }
     const result = await this.bin.service_soa('OrderService', 'consumeApply', param)
 
