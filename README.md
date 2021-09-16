@@ -25,7 +25,12 @@ yarn add coa-allin-pay
 ### 直接使用
 
 ```typescript
-import { AllinPayBin, AllinPayMemberService, AllinPayMerchantService, AllinPayOrderService } from 'coa-allin-pay'
+import {
+  AllinPayBin,
+  AllinPayMemberService,
+  AllinPayMerchantService,
+  AllinPayOrderService,
+} from 'coa-allin-pay'
 
 // 相关配置
 const config = {
