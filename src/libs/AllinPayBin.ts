@@ -192,12 +192,16 @@ export class AllinPayBin {
       die.hint('支付系统提示:' + data.message, 400, data.errorCode)
     }
 
-    // 校验签名
-    const md5_str = createHash('md5').update(data.signedValue).digest('base64')
-    const verify = createVerify('rsa-sha1')
-      .update(md5_str, 'utf8')
-      .verify(this.config.allinPublicKey, data.sign, 'base64')
-    verify || die.hint('支付系统:返回结果校验失败')
+    // 校验签名（有签名才校验）
+    if (data.sign) {
+      const md5_str = createHash('md5')
+        .update(data.signedValue)
+        .digest('base64')
+      const verify = createVerify('rsa-sha1')
+        .update(md5_str, 'utf8')
+        .verify(this.config.allinPublicKey, data.sign, 'base64')
+      verify || die.hint('支付系统:返回结果校验失败')
+    }
 
     // 解析结果
     try {
