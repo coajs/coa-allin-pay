@@ -67,7 +67,7 @@ export class AllinPayBin {
   async gateway_url(url: string, service: string, method: string, param: Dic<any>) {
     // 组装参数并返回
     const params = await this.getParams({ service, method, param })
-    return this.config.endpoint + url + '?' + querystring.stringify(params)
+    return this.config.endpoint + url + '?' + querystring.stringify(params) + '&'
   }
 
   // 加密字段中信息
