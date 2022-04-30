@@ -406,6 +406,35 @@ export class AllinPayMemberService extends AllinPayService {
   }
 
   /**
+   * 账户提现协议签约：
+   * （1） 以前台 H5 页面形式进行请求，为平台端的个人会员及企业会员通过页面方式签订三方协议（会员账户、平台、通联），协议链接有效期 10 分钟。
+   * （2） 签约返回字段"acctProtocolNo-账户提现协议编号"，商户端需保存。
+   * （3） 签约成功提供后台异步通知；签约失败，页面提示失败原因，不提供异步通知。
+   * （4） 个人会员账户提现协议签约前须完成绑定银行卡成功。
+   * （5） 企业会员账户提现协议签约前须完成设置企业信息，且企业信息审核成功。
+   * （6） 未签约会员账户将控制提现功能，个人会员和企业会员提现前需要签订此协议。
+   * （7） 签约请求地址
+   * （8） 客户在微信小程序内调起签约功能的，采取跨小程序跳转方式对接，对接指引详见《小程序应用客户对接云商通 H5 页面类接口接入指引.docx》
+   * @param bizUserId 商户系统用户标识，商户系统中唯一编号
+   * @param signAcctName 签约户名，个人会员：名称，企业会员：法人提现，则上送"法人姓名"，对公户提现，则上送"企业名称"
+   * @param jumpUrl 跳转的链接
+   */
+  async signAcctProtocolUrl(bizUserId: string, signAcctName: string, jumpUrl: string) {
+    const param = {
+      bizUserId,
+      signAcctName,
+      jumpUrl,
+      backUrl: this.config.notify + 'sign_acct_protocol',
+    }
+    return await this.bin.gateway_url(
+      '/yungateway/member/signAcctProtocol.html',
+      'MemberService',
+      'signAcctProtocol',
+      param
+    )
+  }
+
+  /**
    * 华通子账号合规信息维护
    * 针对华通存管的应用，需按照华通合规要求补录会员合规信息，其中：
    *  个人会员：姓名、性别、国籍、职业、住所地或者工作单位地址、联系方式(手机号码)、身份证件或者 身份证明文件的种类、号码、证件有效日期开始、证件有效日期截止、有效期限、身份证正、反影像文 件。
