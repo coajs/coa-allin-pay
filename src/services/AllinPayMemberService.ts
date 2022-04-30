@@ -344,21 +344,24 @@ export class AllinPayMemberService extends AllinPayService {
    * 2) 调用确认绑定银行卡接口（bindBankCard），通联通账户实名验证（三要素）、通联通账户实名验证(四要素)、银行卡四要素验证（万鉴通，全部银行）无需调用此接口。
    * @param bizUserId 商户系统用户标识，商户系统中唯一编号
    * @param cardNo 银行卡号
+   * @param phone 银行预留手机
    * @param name 姓名
    * @param identityNo 证件号，目前填身份证号
    */
   async applyBindBankCard(
     bizUserId: string,
     cardNo: string,
+    phone: string,
     name: string,
     identityNo: string
   ) {
     const param = {
       bizUserId,
       cardNo,
+      phone,
       name,
       identityNo,
-      cardCheck: 1,
+      cardCheck: 5,
       identityType: 1,
     }
     this.bin.param_encrypt(param, ['cardNo', 'identityNo'])
@@ -448,28 +451,30 @@ export class AllinPayMemberService extends AllinPayService {
   }
 
   /**
-   * 会员电子协议签约：
-   * （1） 以前台 H5 页面形式进行请求，为平台端的个人会员及企业会员通过页面方式签订三方协议（会员、平 台、通联）。
-   * （2） 签约返回字段"ContractNo 会员电子协议编号"，商户端需保存。
+   * 账户提现协议签约：
+   * （1） 以前台 H5 页面形式进行请求，为平台端的个人会员及企业会员通过页面方式签订三方协议（会员账户、平台、通联），协议链接有效期 10 分钟。
+   * （2） 签约返回字段"acctProtocolNo-账户提现协议编号"，商户端需保存。
    * （3） 签约成功提供后台异步通知；签约失败，页面提示失败原因，不提供异步通知。
-   * （4） 个人会员电子协议签约前须完成实名认证。
-   * （5） 企业会员电子协议签约前须完成设置企业信息，且企业信息审核成功。
-   * （6） 未签约会员将控制提现功能。
+   * （4） 个人会员账户提现协议签约前须完成绑定银行卡成功。
+   * （5） 企业会员账户提现协议签约前须完成设置企业信息，且企业信息审核成功。
+   * （6） 未签约会员账户将控制提现功能，个人会员和企业会员提现前需要签订此协议。
    * （7） 签约请求地址
+   * （8）客户在微信小程序内调起签约功能的，采取跨小程序跳转方式对接，对接指引详见《小程序应用客户对接云商通 H5 页面类接口接入指引.docx》
    * @param bizUserId 商户系统用户标识，商户系统中唯一编号
+   * @param signAcctName 签约户名，个人会员：名称，企业会员：法人提现，则上送"法人姓名"，对公户提现，则上送"企业名称"
    * @param jumpUrl 跳转的链接
    */
-  async signContractUrl(bizUserId: string, jumpUrl: string) {
+  async signAcctProtocolUrl(bizUserId: string, signAcctName: string, jumpUrl: string) {
     const param = {
       bizUserId,
-      source: 1,
+      signAcctName,
       jumpUrl,
-      backUrl: this.config.notify + 'sign_contract',
+      backUrl: this.config.notify + 'sign_acct_protocol',
     }
     return await this.bin.gateway_url(
-      '/yungateway/member/signContract.html',
+      '/yungateway/member/signAcctProtocol.html',
       'MemberService',
-      'signContract',
+      'signAcctProtocol',
       param
     )
   }
