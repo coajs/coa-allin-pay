@@ -22,7 +22,7 @@
     "build": "rm -rf dist && tsc && cp package.json *.md dist",
     "lint": "eslint .",
     "prettier": "prettier -w .",
-    "sync": "curl -X PUT 'https://npm.taobao.org/sync/coa-allin-pay?sync_upstream=true'"
+    "sync": "curl -X PUT 'https://npmmirror.com/sync/coa-allin-pay?sync_upstream=true'"
   },
   "dependencies": {
     "coa-error": "^1.5.2",
