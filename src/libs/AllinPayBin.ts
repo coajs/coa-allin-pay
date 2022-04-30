@@ -30,7 +30,7 @@ export class AllinPayBin {
   // 发送service_soa请求
   async service_soa(service: string, method: string, param: Dic<any>) {
     // 组装参数并请求
-    const params = await this.getParams({ service, method, param })
+    const params = this.getParams({ service, method, param })
     const axiosConfig = { params }
 
     // 请求并记录开始、结束时间
@@ -81,8 +81,8 @@ export class AllinPayBin {
     param: Dic<any>
   ) {
     // 组装参数并返回
-    const params = await this.getParams({ service, method, param })
-    return this.config.endpoint + url + '?' + querystring.stringify(params)
+    const params = this.getParams({ service, method, param })
+    return this.config.endpoint + url + '?' + querystring.stringify(params) + '&'
   }
 
   // 加密字段中信息
