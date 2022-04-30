@@ -11,11 +11,7 @@ export class AllinPayMerchantService extends AllinPayService {
    */
   async queryReserveFundBalance() {
     const param = { sysid: this.config.sysId, fundAcctSys: 1 }
-    const result = await this.bin.service_soa(
-      'MerchantService',
-      'queryReserveFundBalance',
-      param
-    )
+    const result = await this.bin.service_soa('MerchantService', 'queryReserveFundBalance', param)
     return $.camelCaseKeys(result) as {
       accountNo: string
       accountName: string
@@ -30,11 +26,7 @@ export class AllinPayMerchantService extends AllinPayService {
    */
   async queryMerchantBalance(accountSetNo = this.config.accountSetNo) {
     const param = { accountSetNo }
-    const result = await this.bin.service_soa(
-      'MerchantService',
-      'queryMerchantBalance',
-      param
-    )
+    const result = await this.bin.service_soa('MerchantService', 'queryMerchantBalance', param)
     return result as { allAmount: number; freezeAmount: number }
   }
 
@@ -48,11 +40,7 @@ export class AllinPayMerchantService extends AllinPayService {
    */
   async queryBankBalance(acctNo: string, acctName: string) {
     const param = { acctNo, acctName, acctOrgType: 1 }
-    const result = await this.bin.service_soa(
-      'MerchantService',
-      'queryBankBalance',
-      param
-    )
+    const result = await this.bin.service_soa('MerchantService', 'queryBankBalance', param)
     return result as { balance: number }
   }
 
@@ -64,11 +52,7 @@ export class AllinPayMerchantService extends AllinPayService {
     // 如果银行账户不存在，则返回balance为-1
     if (!acctNo) return { balance: -1 }
     const param = { acctNo, acctName, acctOrgType: 1 }
-    const result = await this.bin.service_soa(
-      'MerchantService',
-      'queryBankBalance',
-      param
-    )
+    const result = await this.bin.service_soa('MerchantService', 'queryBankBalance', param)
     return result as { balance: number }
   }
 
@@ -84,11 +68,7 @@ export class AllinPayMerchantService extends AllinPayService {
    */
   async getCheckAccountFile(date: string, fileType: 1 | 2) {
     const param = { date, fileType }
-    const result = await this.bin.service_soa(
-      'MerchantService',
-      'getCheckAccountFile',
-      param
-    )
+    const result = await this.bin.service_soa('MerchantService', 'getCheckAccountFile', param)
     return result as { url: string }
   }
 
@@ -101,11 +81,7 @@ export class AllinPayMerchantService extends AllinPayService {
    */
   async eleReceiptDownload(bizOrderNo: string) {
     const param = { bizOrderNo }
-    const result = await this.bin.service_soa(
-      'MerchantService',
-      'eleReceiptDownload',
-      param
-    )
+    const result = await this.bin.service_soa('MerchantService', 'eleReceiptDownload', param)
     return result as { url: string }
   }
 }
