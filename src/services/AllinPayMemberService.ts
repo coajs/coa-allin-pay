@@ -15,19 +15,9 @@ export class AllinPayMemberService extends AllinPayService {
    * @param source 访问终端类型 1Mobile 2PC
    * @param acctOrgType 0-通联 1-华通银行 默认1
    */
-  async createMember(
-    bizUserId: string,
-    memberType: AllinPay.MemberType,
-    source: 1 | 2,
-    acctOrgType: number
-  ) {
+  async createMember(bizUserId: string, memberType: AllinPay.MemberType, source: 1 | 2, acctOrgType: number) {
     const param = { bizUserId, memberType, source }
-    const result = await this.bin.service_soa_allow(
-      'MemberService',
-      'createMember',
-      param,
-      '30000'
-    )
+    const result = await this.bin.service_soa_allow('MemberService', 'createMember', param, '30000')
     if (result.allow) {
       const member = await this.getMemberInfo(bizUserId, acctOrgType)
       result.userId = member.memberInfo?.userId || ''
@@ -42,12 +32,7 @@ export class AllinPayMemberService extends AllinPayService {
    */
   async lockMember(bizUserId: string) {
     const param = { bizUserId }
-    const result = await this.bin.service_soa_allow(
-      'MemberService',
-      'lockMember',
-      param,
-      '30022'
-    )
+    const result = await this.bin.service_soa_allow('MemberService', 'lockMember', param, '30022')
     return result as { bizUserId: string }
   }
 
@@ -57,12 +42,7 @@ export class AllinPayMemberService extends AllinPayService {
    */
   async unlockMember(bizUserId: string) {
     const param = { bizUserId }
-    const result = await this.bin.service_soa_allow(
-      'MemberService',
-      'unlockMember',
-      param,
-      '9000'
-    )
+    const result = await this.bin.service_soa_allow('MemberService', 'unlockMember', param, '9000')
     return result as { bizUserId: string }
   }
 
@@ -76,17 +56,9 @@ export class AllinPayMemberService extends AllinPayService {
    * @param phone 手机号
    * @param verificationCodeType 验证码类型 9-绑定手机 6-解绑手机
    */
-  async sendVerificationCode(
-    bizUserId: string,
-    phone: string,
-    verificationCodeType: 9 | 6
-  ) {
+  async sendVerificationCode(bizUserId: string, phone: string, verificationCodeType: 9 | 6) {
     const param = { bizUserId, phone, verificationCodeType }
-    const result = await this.bin.service_soa(
-      'MemberService',
-      'sendVerificationCode',
-      param
-    )
+    const result = await this.bin.service_soa('MemberService', 'sendVerificationCode', param)
     return result as { bizUserId: string; phone: string }
   }
 
@@ -102,12 +74,7 @@ export class AllinPayMemberService extends AllinPayService {
    */
   async bindPhone(bizUserId: string, phone: string, verificationCode: string) {
     const param = { bizUserId, phone, verificationCode }
-    const result = await this.bin.service_soa_allow(
-      'MemberService',
-      'bindPhone',
-      param,
-      '30024'
-    )
+    const result = await this.bin.service_soa_allow('MemberService', 'bindPhone', param, '30024')
     return result as { bizUserId: string; phone: string }
   }
 
@@ -119,17 +86,9 @@ export class AllinPayMemberService extends AllinPayService {
    * @param phone 手机号
    * @param verificationCode 验证码
    */
-  async unbindPhone(
-    bizUserId: string,
-    phone: string,
-    verificationCode: string
-  ) {
+  async unbindPhone(bizUserId: string, phone: string, verificationCode: string) {
     const param = { bizUserId, phone, verificationCode }
-    const result = await this.bin.service_soa(
-      'MemberService',
-      'unbindPhone',
-      param
-    )
+    const result = await this.bin.service_soa('MemberService', 'unbindPhone', param)
     return result as { bizUserId: string; phone: string }
   }
 
@@ -151,12 +110,7 @@ export class AllinPayMemberService extends AllinPayService {
       operationType: 'set',
       acctType: 'weChatMiniProgram',
     }
-    const result = await this.bin.service_soa_allow(
-      'MemberService',
-      'applyBindAcct',
-      param,
-      '9000'
-    )
+    const result = await this.bin.service_soa_allow('MemberService', 'applyBindAcct', param, '9000')
     return result as { bizUserId: string }
   }
 
@@ -196,13 +150,7 @@ export class AllinPayMemberService extends AllinPayService {
       telephone,
     }
     this.bin.param_encrypt(param, ['identityNo'])
-    const result = await this.bin.service_soa_allow(
-      'MemberService',
-      'setRealName',
-      param,
-      '30007',
-      { identityNo }
-    )
+    const result = await this.bin.service_soa_allow('MemberService', 'setRealName', param, '30007', { identityNo })
     this.bin.param_decrypt(result, ['identityNo'])
     return result as {
       bizUserId: string
@@ -245,11 +193,7 @@ export class AllinPayMemberService extends AllinPayService {
       professionNo,
       telephone,
     }
-    const result = await this.bin.service_soa(
-      'MemberService',
-      'fillMemberInfoForHT',
-      param
-    )
+    const result = await this.bin.service_soa('MemberService', 'fillMemberInfoForHT', param)
     return result as { bizUserId: string }
   }
 
@@ -266,11 +210,7 @@ export class AllinPayMemberService extends AllinPayService {
    * @param companyBasicInfo 企业详细信息
    * @param isAuth 是否进行线上认证
    */
-  async setCompanyInfo(
-    bizUserId: string,
-    companyBasicInfo: AllinPay.CompanyBasicInfo,
-    isAuth = true
-  ) {
+  async setCompanyInfo(bizUserId: string, companyBasicInfo: AllinPay.CompanyBasicInfo, isAuth = true) {
     this.bin.param_encrypt(companyBasicInfo, ['accountNo', 'legalIds'])
     const param = {
       bizUserId,
@@ -278,11 +218,7 @@ export class AllinPayMemberService extends AllinPayService {
       isAuth,
       backUrl: this.config.notify + 'set_company_info',
     }
-    const result = await this.bin.service_soa(
-      'MemberService',
-      'setCompanyInfo',
-      param
-    )
+    const result = await this.bin.service_soa('MemberService', 'setCompanyInfo', param)
     return result as {
       bizUserId: string
       phone: string
@@ -300,11 +236,7 @@ export class AllinPayMemberService extends AllinPayService {
    */
   async getMemberInfo(bizUserId: string, acctOrgType: number) {
     const param = { bizUserId, acctOrgType }
-    const result = await this.bin.service_soa(
-      'MemberService',
-      'getMemberInfo',
-      param
-    )
+    const result = await this.bin.service_soa('MemberService', 'getMemberInfo', param)
     this.bin.param_decrypt(result, ['memberInfo.identityCardNo'])
     return result as {
       bizUserId: string
@@ -323,11 +255,7 @@ export class AllinPayMemberService extends AllinPayService {
   async getBankCardBin(cardNo: string) {
     const param = { cardNo }
     this.bin.param_encrypt(param, ['cardNo'])
-    const result = await this.bin.service_soa(
-      'MemberService',
-      'getBankCardBin',
-      param
-    )
+    const result = await this.bin.service_soa('MemberService', 'getBankCardBin', param)
     return result as { cardBinInfo: AllinPay.CardBinInfo }
   }
 
@@ -348,13 +276,7 @@ export class AllinPayMemberService extends AllinPayService {
    * @param name 姓名
    * @param identityNo 证件号，目前填身份证号
    */
-  async applyBindBankCard(
-    bizUserId: string,
-    cardNo: string,
-    phone: string,
-    name: string,
-    identityNo: string
-  ) {
+  async applyBindBankCard(bizUserId: string, cardNo: string, phone: string, name: string, identityNo: string) {
     const param = {
       bizUserId,
       cardNo,
@@ -365,12 +287,7 @@ export class AllinPayMemberService extends AllinPayService {
       identityType: 1,
     }
     this.bin.param_encrypt(param, ['cardNo', 'identityNo'])
-    const result = await this.bin.service_soa_allow(
-      'MemberService',
-      'applyBindBankCard',
-      param,
-      '30017'
-    )
+    const result = await this.bin.service_soa_allow('MemberService', 'applyBindBankCard', param, '30017')
     return result as {
       bizUserId: string
       bankName: string
@@ -392,11 +309,7 @@ export class AllinPayMemberService extends AllinPayService {
   async unbindBankCard(bizUserId: string, cardNo: string) {
     const param = { bizUserId, cardNo }
     this.bin.param_encrypt(param, ['cardNo'])
-    const result = await this.bin.service_soa(
-      'MemberService',
-      'unbindBankCard',
-      param
-    )
+    const result = await this.bin.service_soa('MemberService', 'unbindBankCard', param)
     this.bin.param_decrypt(result, ['cardNo'])
     return result as { bizUserId: string; cardNo: string }
   }
@@ -408,14 +321,8 @@ export class AllinPayMemberService extends AllinPayService {
    */
   async queryBankCard(bizUserId: string) {
     const param = { bizUserId }
-    const result = await this.bin.service_soa(
-      'MemberService',
-      'queryBankCard',
-      param
-    )
-    _.forEach(result.bindCardList, (v) =>
-      this.bin.param_decrypt(v, ['bankCardNo'])
-    )
+    const result = await this.bin.service_soa('MemberService', 'queryBankCard', param)
+    _.forEach(result.bindCardList, v => this.bin.param_decrypt(v, ['bankCardNo']))
     return result as { bindCardList: AllinPay.BankCardInfo[] }
   }
 
@@ -432,11 +339,7 @@ export class AllinPayMemberService extends AllinPayService {
       accountSetNo: this.config.accountSetNo,
       acctOrgType,
     }
-    const result = await this.bin.service_soa(
-      'MemberService',
-      'createBankSubAcctNo',
-      param
-    )
+    const result = await this.bin.service_soa('MemberService', 'createBankSubAcctNo', param)
     if (result.allow) {
       const res = await this.getMemberInfo(bizUserId, acctOrgType)
       result.subAcctNo = res.memberInfo.subAcctNo
@@ -470,12 +373,7 @@ export class AllinPayMemberService extends AllinPayService {
       jumpUrl,
       backUrl: this.config.notify + 'sign_contract',
     }
-    return await this.bin.gateway_url(
-      '/yungateway/member/signContract.html',
-      'MemberService',
-      'signContract',
-      param
-    )
+    return await this.bin.gateway_url('/yungateway/member/signContract.html', 'MemberService', 'signContract', param)
   }
 
   /**
@@ -517,22 +415,14 @@ export class AllinPayMemberService extends AllinPayService {
    * @param subAcctNo 会员子账号
    * @param jumpUrl 签订之后，跳转返回的页面地址
    */
-  async getSubAcctNoInfoForHT(
-    bizUserId: string,
-    subAcctNo: string,
-    jumpUrl: string
-  ) {
+  async getSubAcctNoInfoForHT(bizUserId: string, subAcctNo: string, jumpUrl: string) {
     const param = {
       bizUserId,
       subAcctNo,
       jumpUrl,
       backUrl: this.config.notify + 'sub_acct_info',
     }
-    const result = await this.bin.service_soa(
-      'MemberService',
-      'getSubAcctNoInfoForHT',
-      param
-    )
+    const result = await this.bin.service_soa('MemberService', 'getSubAcctNoInfoForHT', param)
     return result as {
       bizUserId: string
       subAcctNo: string
@@ -557,12 +447,7 @@ export class AllinPayMemberService extends AllinPayService {
       subMchtId: this.config.wxSubMiniPay.mchId,
       subAppId: this.config.wxSubMiniPay.appWxaId,
     }
-    const result = await this.bin.service_soa_allow(
-      'MemberService',
-      'wxSubMchtService',
-      param,
-      '9000'
-    )
+    const result = await this.bin.service_soa_allow('MemberService', 'wxSubMchtService', param, '9000')
     return result as { bizUserId: string }
   }
 }
