@@ -98,6 +98,16 @@ export class AllinPayBin {
     return createSign('rsa-sha1').update(str, 'utf8').sign(this.config.bankPrivateKey, 'base64')
   }
 
+  // 获取数据 rps
+  public getData(result: Dic<any>) {
+    // 解析结果
+    try {
+      return JSON.parse(result.rps)
+    } catch (e) {
+      die.hint('支付系统:返回结果解析失败')
+    }
+  }
+
   // 获取校验后的数据 rps
   public getVerifyData(result: Dic<any>) {
     // 校验签名
