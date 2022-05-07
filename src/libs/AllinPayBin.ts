@@ -119,12 +119,7 @@ export class AllinPayBin {
       .verify(this.config.allinPublicKey, result.sign, 'base64')
     verify || die.hint('支付系统:返回结果校验失败')
 
-    // 解析结果
-    try {
-      return JSON.parse(result.rps)
-    } catch (e) {
-      die.hint('支付系统:返回结果解析失败')
-    }
+    return this.getData(result)
   }
 
   // 推送返回记录
