@@ -260,7 +260,7 @@ export class AllinPayMemberService extends AllinPayService {
   }
 
   /**
-   * 请求绑定银行卡
+   * 请求绑定银行卡（三要素）
    * 接口调用说明：
    * 1.个人用户必须先完成【个人实名认证】才能绑定银行卡，且接口请求参数（姓名和证件号码）必须与实名信息一致，验证与实名信息是同人银行卡，且银行卡真实有效。
    * 2.个人用户默认允许绑定多张银行卡，具体配置信息可与通商云业务人员确认。
@@ -272,11 +272,37 @@ export class AllinPayMemberService extends AllinPayService {
    * 2) 调用确认绑定银行卡接口（bindBankCard），通联通账户实名验证（三要素）、通联通账户实名验证(四要素)、银行卡四要素验证（万鉴通，全部银行）无需调用此接口。
    * @param bizUserId 商户系统用户标识，商户系统中唯一编号
    * @param cardNo 银行卡号
+   * @param name 姓名
+   * @param identityNo 证件号，目前填身份证号
+   */
+  async applyBindBankCard1(bizUserId: string, cardNo: string, name: string, identityNo: string) {
+    const param = {
+      bizUserId,
+      cardNo,
+      name,
+      identityNo,
+      cardCheck: 1,
+      identityType: 1,
+    }
+    this.bin.param_encrypt(param, ['cardNo', 'identityNo'])
+    const result = await this.bin.service_soa_allow('MemberService', 'applyBindBankCard', param, '30017')
+    return result as {
+      bizUserId: string
+      bankName: string
+      bankCode: string
+      cardType: 1 | 2
+    }
+  }
+
+  /**
+   * 请求绑定银行卡（四要素）
+   * @param bizUserId 商户系统用户标识，商户系统中唯一编号
+   * @param cardNo 银行卡号
    * @param phone 银行预留手机
    * @param name 姓名
    * @param identityNo 证件号，目前填身份证号
    */
-  async applyBindBankCard(bizUserId: string, cardNo: string, phone: string, name: string, identityNo: string) {
+  async applyBindBankCard5(bizUserId: string, cardNo: string, phone: string, name: string, identityNo: string) {
     const param = {
       bizUserId,
       cardNo,
@@ -354,7 +380,7 @@ export class AllinPayMemberService extends AllinPayService {
   }
 
   /**
-   * 会员电子协议签约（已废弃）：
+   * 会员电子协议签约：
    * （1） 以前台 H5 页面形式进行请求，为平台端的个人会员及企业会员通过页面方式签订三方协议（会员、平台、通联）。
    * （2） 签约返回字段"ContractNo 会员电子协议编号"，商户端需保存。
    * （3） 签约成功提供后台异步通知；签约失败，页面提示失败原因，不提供异步通知。
@@ -364,7 +390,6 @@ export class AllinPayMemberService extends AllinPayService {
    * （7） 签约请求地址
    * @param bizUserId 商户系统用户标识，商户系统中唯一编号
    * @param jumpUrl 跳转的链接
-   * @deprecated
    */
   async signContractUrl(bizUserId: string, jumpUrl: string) {
     const param = {
