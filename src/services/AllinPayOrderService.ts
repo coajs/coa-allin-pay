@@ -117,150 +117,20 @@ export class AllinPayOrderService extends AllinPayService {
   }
 
   /**
-   * 消费申请(通联通集团模式)
-   * @param payerId 付款方商户系统用户标识，商户 系统中唯一编号。
-   * @param bizOrderNo 商户订单号（支付订单）
-   * @param amount 订单金额
-   * @param openId 微信小程序的openId
-   * @param summary 摘要
-   * @param extendOption 扩展配置
-   * @param extendParams 扩展参数
-   */
-  async consumeApplyWxaOrg(
-    bizOrderNo: string,
-    payerId: string,
-    openId: string,
-    amount: number,
-    goodsName: string,
-    summary = '',
-    extendOption: { [key: string]: any } = {},
-    extendParams: { frontUrl?: string } = {}
-  ) {
-    const param = {
-      payerId,
-      recieverId: '#yunBizUserId_B2C#',
-      bizOrderNo,
-      amount,
-      fee: 0,
-      payMethod: {
-        WECHATPAY_MINIPROGRAM_ORG: {
-          vspCusid: extendOption?.vspCusId || this.config.wxOrgMiniPay.vspCusId,
-          subAppid: extendOption?.subAppWxaId || this.config.wxOrgMiniPay.subAppWxaId,
-          limitPay: extendOption?.limitPay || this.config.wxOrgMiniPay.limitPay,
-          amount,
-          acct: openId,
-        },
-      },
-      validateType: 0,
-      summary: summary.slice(0, 20),
-      extendInfo: summary.slice(0, 50),
-      source: 1,
-      industryCode: '1910',
-      industryName: '其他',
-      backUrl: this.config.notify + 'trade_pay',
-      goodsName: goodsName || '订单' + bizOrderNo,
-      ...extendParams,
-    }
-    const result = await this.bin.service_soa('OrderService', 'consumeApply', param)
-
-    // 如果支付状态为失败
-    if (result.payStatus === 'fail') die.hint('支付消费异常：' + result.payFailMessage)
-
-    // 处理payInfo
-    if (typeof result.payInfo === 'string') result.payInfo = JSON.parse(result.payInfo)
-
-    return result as {
-      bizUserId: string
-      bizOrderNo: string
-      orderNo: string
-      payStatus: 'success' | 'pending'
-      payInfo: Record<string, any>
-    }
-  }
-
-  /**
-   * 消费申请(H5通联通集团模式)
-   * @param payerId 付款方商户系统用户标识，商户 系统中唯一编号。
-   * @param bizOrderNo 商户订单号（支付订单）
-   * @param amount 订单金额
-   * @param openId 微信公众号的openId
-   * @param summary 摘要
-   * @param extendOption 扩展配置
-   * @param extendParams 扩展参数
-   */
-  async consumeApplyWxbOrg(
-    bizOrderNo: string,
-    payerId: string,
-    openId: string,
-    amount: number,
-    goodsName: string,
-    summary = '',
-    extendOption: { [key: string]: any } = {},
-    extendParams: { frontUrl?: string } = {}
-  ) {
-    const param = {
-      payerId,
-      recieverId: '#yunBizUserId_B2C#',
-      bizOrderNo,
-      amount,
-      fee: 0,
-      payMethod: {
-        WECHAT_PUBLIC_ORG: {
-          vspCusid: extendOption?.vspCusId || this.config.wxOrgMiniPay.vspCusId,
-          subAppid: extendOption?.subAppWxaId || this.config.wxOrgMiniPay.subAppWxaId,
-          limitPay: extendOption?.limitPay || this.config.wxOrgMiniPay.limitPay,
-          amount,
-          acct: openId,
-        },
-      },
-      validateType: 0,
-      summary: summary.slice(0, 20),
-      extendInfo: summary.slice(0, 50),
-      source: 1,
-      industryCode: '1910',
-      industryName: '其他',
-      backUrl: this.config.notify + 'trade_pay',
-      goodsName: goodsName || '订单' + bizOrderNo,
-      ...extendParams,
-    }
-    const result = await this.bin.service_soa('OrderService', 'consumeApply', param)
-
-    // 如果支付状态为失败
-    if (result.payStatus === 'fail') die.hint('支付消费异常：' + result.payFailMessage)
-
-    // 处理payInfo
-    if (typeof result.payInfo === 'string') result.payInfo = JSON.parse(result.payInfo)
-
-    return result as {
-      bizUserId: string
-      bizOrderNo: string
-      orderNo: string
-      payStatus: 'success' | 'pending'
-      payInfo: Record<string, any>
-    }
-  }
-
-  /**
    * 消费申请(收银宝H5集团模式)
    * @param payerId 付款方商户系统用户标识，商户 系统中唯一编号。
+   * @param recieverId 收款方商户系统用户标识，商户系统中唯一编号。
    * @param bizOrderNo 商户订单号（支付订单）
    * @param amount 订单金额
+   * @param goodsName 商品名称
    * @param summary 摘要
    * @param extendOption 扩展配置
    * @param extendParams 扩展参数
    */
-  async consumeApplyH5VspOrg(
-    bizOrderNo: string,
-    payerId: string,
-    amount: number,
-    goodsName: string,
-    summary = '',
-    extendOption: { [key: string]: any } = {},
-    extendParams: { frontUrl?: string } = {}
-  ) {
+  async consumeApplyH5VspOrg(bizOrderNo: string, payerId: string, recieverId: string, amount: number, goodsName: string, summary = '', extendOption: { [key: string]: any } = {}, extendParams: { frontUrl?: string } = {}) {
     const param = {
       payerId,
-      recieverId: '#yunBizUserId_B2C#',
+      recieverId,
       bizOrderNo,
       amount,
       fee: 0,
@@ -299,6 +169,394 @@ export class AllinPayOrderService extends AllinPayService {
   }
 
   /**
+   * 消费申请(通联通集团模式)
+   * @param bizOrderNo 商户订单号（支付订单）
+   * @param payerId 付款方商户系统用户标识，商户 系统中唯一编号。
+   * @param recieverId 收款方商户系统用户标识，商户系统中唯一编号。
+   * @param openId 微信小程序的openId
+   * @param amount 订单金额
+   * @param fee 手续费
+   * @param goodsName 商品名称
+   * @param splitRule 分账规则
+   * @param summary 摘要
+   * @param extendOption 扩展配置
+   * @param extendParams 扩展参数
+   */
+  async consumeApplyWxaOrg(
+    bizOrderNo: string,
+    payerId: string,
+    recieverId: string,
+    openId: string,
+    amount: number,
+    fee: number,
+    goodsName: string,
+    splitRule: AllinPay.SplitRuleItem[],
+    summary = '',
+    extendOption: { [key: string]: any } = {},
+    extendParams: { frontUrl?: string } = {}
+  ) {
+    const param = {
+      bizOrderNo,
+      payerId,
+      recieverId,
+      amount,
+      fee,
+      payMethod: {
+        WECHATPAY_MINIPROGRAM_ORG: {
+          vspCusid: extendOption?.vspCusId || this.config.wxOrgMiniPay.vspCusId,
+          subAppid: extendOption?.subAppWxaId || this.config.wxOrgMiniPay.subAppWxaId,
+          limitPay: extendOption?.limitPay || this.config.wxOrgMiniPay.limitPay,
+          amount,
+          acct: openId,
+        },
+      },
+      validateType: 0,
+      summary: summary.slice(0, 20),
+      extendInfo: summary.slice(0, 50),
+      source: 1,
+      industryCode: '1910',
+      industryName: '其他',
+      backUrl: this.config.notify + 'trade_pay',
+      goodsName: goodsName || '订单' + bizOrderNo,
+      ...extendParams,
+    }
+    splitRule.length &&
+    _.assign(param, {
+      splitRule: _.map(splitRule, ({ bizUserId, amount, fee }) => {
+        if (bizUserId === '#yunBizUserId_B2C#') {
+          return { bizUserId, amount, fee, accountSetNo: '100001' }
+        } else {
+          return { bizUserId, amount, fee }
+        }
+      }),
+    })
+    const result = await this.bin.service_soa('OrderService', 'consumeApply', param)
+
+    // 如果支付状态为失败
+    if (result.payStatus === 'fail') die.hint('支付消费异常：' + result.payFailMessage)
+
+    // 处理payInfo
+    if (typeof result.payInfo === 'string') result.payInfo = JSON.parse(result.payInfo)
+
+    return result as {
+      bizUserId: string
+      bizOrderNo: string
+      orderNo: string
+      payStatus: 'success' | 'pending'
+      payInfo: Record<string, any>
+    }
+  }
+
+  /**
+   * 消费申请(H5通联通集团模式)
+   * @param bizOrderNo 商户订单号（支付订单）
+   * @param payerId 付款方商户系统用户标识，商户 系统中唯一编号。
+   * @param recieverId 收款方商户系统用户标识，商户系统中唯一编号。
+   * @param openId 微信公众号的openId
+   * @param amount 订单金额
+   * @param fee 手续费
+   * @param goodsName 商品名称
+   * @param splitRule 分账规则
+   * @param summary 摘要
+   * @param extendOption 扩展配置
+   * @param extendParams 扩展参数
+   */
+  async consumeApplyWxbOrg(
+    bizOrderNo: string,
+    payerId: string,
+    recieverId: string,
+    openId: string,
+    amount: number,
+    fee: number,
+    goodsName: string,
+    splitRule: AllinPay.SplitRuleItem[],
+    summary = '',
+    extendOption: { [key: string]: any } = {},
+    extendParams: { frontUrl?: string } = {}
+  ) {
+    const param = {
+      bizOrderNo,
+      payerId,
+      recieverId,
+      amount,
+      fee,
+      payMethod: {
+        WECHAT_PUBLIC_ORG: {
+          vspCusid: extendOption?.vspCusId || this.config.wxOrgMiniPay.vspCusId,
+          subAppid: extendOption?.subAppWxaId || this.config.wxOrgMiniPay.subAppWxaId,
+          limitPay: extendOption?.limitPay || this.config.wxOrgMiniPay.limitPay,
+          amount,
+          acct: openId,
+        },
+      },
+      validateType: 0,
+      summary: summary.slice(0, 20),
+      extendInfo: summary.slice(0, 50),
+      source: 1,
+      industryCode: '1910',
+      industryName: '其他',
+      backUrl: this.config.notify + 'trade_pay',
+      goodsName: goodsName || '订单' + bizOrderNo,
+      ...extendParams,
+    }
+    splitRule.length &&
+    _.assign(param, {
+      splitRule: _.map(splitRule, ({ bizUserId, amount, fee }) => {
+        if (bizUserId === '#yunBizUserId_B2C#') {
+          return { bizUserId, amount, fee, accountSetNo: '100001' }
+        } else {
+          return { bizUserId, amount, fee }
+        }
+      }),
+    })
+    const result = await this.bin.service_soa('OrderService', 'consumeApply', param)
+
+    // 如果支付状态为失败
+    if (result.payStatus === 'fail') die.hint('支付消费异常：' + result.payFailMessage)
+
+    // 处理payInfo
+    if (typeof result.payInfo === 'string') result.payInfo = JSON.parse(result.payInfo)
+
+    return result as {
+      bizUserId: string
+      bizOrderNo: string
+      orderNo: string
+      payStatus: 'success' | 'pending'
+      payInfo: Record<string, any>
+    }
+  }
+
+  /**
+   * 消费申请(账户内转账)
+   * @param payerId 付款方商户系统用户标识，商户 系统中唯一编号。
+   * @param recieverId 收款方商户系统用户标识，商户系统中唯一编号。
+   * @param bizOrderNo 商户订单号（支付订单）
+   * @param amount 订单金额
+   * @param summary 摘要
+   */
+  async consumeApplyInternalTransfer(bizOrderNo: string, payerId: string, recieverId: string, amount: number, summary = '') {
+    const param = {
+      payerId,
+      recieverId,
+      bizOrderNo,
+      amount,
+      fee: 0,
+      payMethod: {
+        BALANCE: [
+          {
+            accountSetNo: this.config.accountSetNo,
+            amount,
+          },
+        ],
+      },
+      validateType: 1,
+      summary: summary.slice(0, 20),
+      extendInfo: summary.slice(0, 50),
+      source: 1,
+      industryCode: '1910',
+      industryName: '其他',
+      backUrl: this.config.notify + 'transfer_pay',
+    }
+    const result = await this.bin.service_soa('OrderService', 'consumeApply', param)
+
+    // 如果支付状态为失败
+    if (result.payStatus === 'fail') die.hint('支付消费异常：' + result.payFailMessage)
+
+    // 处理payInfo
+    if (typeof result.payInfo === 'string') result.payInfo = JSON.parse(result.payInfo)
+
+    return result as {
+      bizUserId: string
+      bizOrderNo: string
+      orderNo: string
+      payStatus: 'success' | 'pending'
+      payInfo: Record<string, any>
+    }
+  }
+
+  async pay(bizOrderNo: string, bizUserId: string, verificationCode: string) {
+    const param = {
+      bizOrderNo,
+      bizUserId,
+      verificationCode,
+      consumerIp: this.config.consumerIp,
+    }
+    const result = await this.bin.service_soa('OrderService', 'pay', param)
+
+    // 如果支付状态为失败
+    if (result.payStatus === 'fail') die.hint('支付消费异常：' + result.payFailMessage)
+
+    return result
+  }
+
+  /**
+   * 托管代收申请(通联通集团模式)
+   * @param bizOrderNo 商户订单号（支付订单）
+   * @param payerId 付款方商户系统用户标识，商户 系统中唯一编号。
+   * @param recieverList 收款列表
+   * @param openId 微信公众号的openId
+   * @param amount 订单金额
+   * @param fee 手续费
+   * @param goodsName 商品名称
+   * @param summary 摘要
+   * @param extendOption 扩展配置
+   * @param extendParams 扩展参数
+   */
+  async agentCollectApplyWxaOrg(
+    bizOrderNo: string,
+    payerId: string,
+    recieverList: AllinPay.RecieverListItem[],
+    openId: string,
+    amount: number,
+    fee: number,
+    goodsName: string,
+    summary = '',
+    extendOption: { [key: string]: any } = {},
+    extendParams: { frontUrl?: string } = {}
+  ) {
+    const param = {
+      bizOrderNo,
+      payerId,
+      recieverList,
+      amount,
+      fee,
+      payMethod: {
+        WECHATPAY_MINIPROGRAM_ORG: {
+          vspCusid: extendOption?.vspCusId || this.config.wxOrgMiniPay.vspCusId,
+          subAppid: extendOption?.subAppWxaId || this.config.wxOrgMiniPay.subAppWxaId,
+          limitPay: extendOption?.limitPay || this.config.wxOrgMiniPay.limitPay,
+          amount,
+          acct: openId,
+        },
+      },
+      validateType: 0,
+      summary: summary.slice(0, 20),
+      extendInfo: summary.slice(0, 50),
+      source: 1,
+      industryCode: '1910',
+      industryName: '其他',
+      backUrl: this.config.notify + 'agent_collect',
+      goodsName: goodsName || '订单' + bizOrderNo,
+      tradeCode: '3001',
+      ...extendParams,
+    }
+    const result = await this.bin.service_soa('OrderService', 'agentCollectApply', param)
+
+    // 如果支付状态为失败
+    if (result.payStatus === 'fail') die.hint('支付消费异常：' + result.payFailMessage)
+
+    // 处理payInfo
+    if (typeof result.payInfo === 'string') result.payInfo = JSON.parse(result.payInfo)
+
+    return result as {
+      bizUserId: string
+      bizOrderNo: string
+      orderNo: string
+      payStatus: 'success' | 'pending'
+      payInfo: Record<string, any>
+    }
+  }
+
+  /**
+   * 托管代收申请(H5通联通集团模式)
+   * @param bizOrderNo 商户订单号（支付订单）
+   * @param payerId 付款方商户系统用户标识，商户 系统中唯一编号。
+   * @param recieverList 收款列表
+   * @param openId 微信公众号的openId
+   * @param amount 订单金额
+   * @param fee 手续费
+   * @param goodsName 商品名称
+   * @param summary 摘要
+   * @param extendOption 扩展配置
+   * @param extendParams 扩展参数
+   */
+  async agentCollectApplyWxbOrg(
+    bizOrderNo: string,
+    payerId: string,
+    recieverList: AllinPay.RecieverListItem[],
+    openId: string,
+    amount: number,
+    fee: number,
+    goodsName: string,
+    summary = '',
+    extendOption: { [key: string]: any } = {},
+    extendParams: { frontUrl?: string } = {}
+  ) {
+    const param = {
+      bizOrderNo,
+      payerId,
+      recieverList,
+      amount,
+      fee,
+      payMethod: {
+        WECHAT_PUBLIC_ORG: {
+          vspCusid: extendOption?.vspCusId || this.config.wxOrgMiniPay.vspCusId,
+          subAppid: extendOption?.subAppWxaId || this.config.wxOrgMiniPay.subAppWxaId,
+          limitPay: extendOption?.limitPay || this.config.wxOrgMiniPay.limitPay,
+          amount,
+          acct: openId,
+        },
+      },
+      validateType: 0,
+      summary: summary.slice(0, 20),
+      extendInfo: summary.slice(0, 50),
+      source: 1,
+      industryCode: '1910',
+      industryName: '其他',
+      backUrl: this.config.notify + 'agent_collect',
+      goodsName: goodsName || '订单' + bizOrderNo,
+      tradeCode: '3001',
+      ...extendParams,
+    }
+    const result = await this.bin.service_soa('OrderService', 'agentCollectApply', param)
+
+    // 如果支付状态为失败
+    if (result.payStatus === 'fail') die.hint('支付消费异常：' + result.payFailMessage)
+
+    // 处理payInfo
+    if (typeof result.payInfo === 'string') result.payInfo = JSON.parse(result.payInfo)
+
+    return result as {
+      bizUserId: string
+      bizOrderNo: string
+      orderNo: string
+      payStatus: 'success' | 'pending'
+      payInfo: Record<string, any>
+    }
+  }
+
+  /**
+   * 批量托管代付
+   * @param bizBatchNo 商户批次号
+   * @param batchPayList 批量代付列表
+   */
+  async batchAgentPay(bizBatchNo: string, batchPayList: AllinPay.BatchPayListItem[]) {
+    const param = {
+      bizBatchNo,
+      batchPayList,
+      tradeCode: '4001',
+    }
+    _.forEach(param.batchPayList, (item) => {
+      _.assign(item, {
+        accountSetNo: this.config.accountSetNo,
+        backUrl: this.config.notify + 'agent_pay',
+      })
+      item.splitRuleList &&
+      _.assign(item, {
+        splitRuleList: _.map(item.splitRuleList, ({ bizUserId, amount, fee }) => {
+          if (bizUserId === '#yunBizUserId_B2C#') {
+            return { bizUserId, amount, fee, accountSetNo: '100001' }
+          } else {
+            return { bizUserId, amount, fee }
+          }
+        }),
+      })
+    })
+    const result = await this.bin.service_soa('OrderService', 'batchAgentPay', param)
+    return result as { bizBatchNo: string }
+  }
+
+  /**
    * 查询订单状态
    * @param bizOrderNo 商户订单号（支付订单）
    */
@@ -306,6 +564,16 @@ export class AllinPayOrderService extends AllinPayService {
     const param = { bizOrderNo }
     const result = await this.bin.service_soa('OrderService', 'getOrderDetail', param)
     return result as AllinPay.OrderDetail
+  }
+
+  /**
+   * 查询付款方资金代付明细
+   * @param bizOrderNo 商户订单号（托管代收订单号）
+   */
+  async getPaymentInformationDetail(bizOrderNo: string) {
+    const param = { bizOrderNo }
+    const result = await this.bin.service_soa('OrderService', 'getPaymentInformationDetail', param)
+    return result as AllinPay.PaymentInformationDetail
   }
 
   /**
@@ -325,23 +593,35 @@ export class AllinPayOrderService extends AllinPayService {
    * @param bizOrderNo 商户订单号（支付订单）
    * @param oriBizOrderNo 商户原订单号（需要退款的原交易订单号）
    * @param amount 订单金额
+   * @param feeAmount 手续费退款金额
    * @param type 退款类型 trade_refund transfer_refund
    */
-  async refund(
-    bizOrderNo: string,
-    oriBizOrderNo: string,
-    bizUserId: string,
-    amount: number,
-    type: 'trade_refund' | 'transfer_refund'
-  ) {
+
+  /**
+   * 交易退款
+   * @param bizOrderNo 商户订单号（支付订单）
+   * @param oriBizOrderNo 商户原订单号（需要退款的原交易订单号）
+   * @param bizUserId 付款方商户系统用户标识，商户 系统中唯一编号。
+   * @param refundList 收款人的退款金额
+   * @param amount 订单金额
+   * @param feeAmount 手续费退款金额
+   */
+  async trade_refund(bizOrderNo: string, oriBizOrderNo: string, bizUserId: string, refundList: Array<{ bizUserId: string; amount: number }>, amount: number, feeAmount: number) {
     const param = {
       bizOrderNo,
       oriBizOrderNo,
       bizUserId,
       amount,
+      feeAmount,
       refundType: 'D0',
-      backUrl: this.config.notify + type,
+      backUrl: this.config.notify + 'trade_refund',
     }
+    refundList.length &&
+    _.assign(param, {
+      refundList: _.map(refundList, ({ bizUserId, amount }) => {
+        return { bizUserId, amount, accountSetNo: this.config.accountSetNo }
+      }),
+    })
     const result = await this.bin.service_soa('OrderService', 'refund', param)
 
     // 如果支付状态为失败
@@ -355,14 +635,71 @@ export class AllinPayOrderService extends AllinPayService {
     }
   }
 
-  // 交易退款
-  async trade_refund(refundId: string, orderId: string, bizUserId: string, amount: number) {
-    return await this.refund(refundId, orderId, bizUserId, amount, 'trade_refund')
+  async trade_splitRefund(bizOrderNo: string, oriBizOrderNo: string, bizUserId: string, orderRefundList: AllinPay.OrderRefundListItem[], amount: number, feeAmount: number) {
+    const param = {
+      bizOrderNo,
+      oriBizOrderNo,
+      bizUserId,
+      orderRefundList,
+      amount,
+      feeAmount,
+      refundType: 'D0',
+      backUrl: this.config.notify + 'trade_refund',
+    }
+    _.forEach(param.orderRefundList, (item) => {
+      _.assign(item, {
+        splitRefundList: _.map(item.splitRefundList, ({ bizUserId, amount, feeAmount }) => {
+          if (bizUserId === '#yunBizUserId_B2C#') {
+            return { bizUserId, amount, feeAmount, accountSetNo: '100001' }
+          } else {
+            return { bizUserId, amount, feeAmount }
+          }
+        }),
+      })
+
+      item.totalSplitAmount = _.sumBy(item.splitRefundList, 'amount')
+      item.totalSplitfeeAmount = _.sumBy(item.splitRefundList, 'feeAmount')
+    })
+    const result = await this.bin.service_soa('OrderService', 'orderSplitRefund', param)
+
+    // 如果支付状态为失败
+    if (result.payStatus === 'fail') die.hint('退款申请异常：' + result.payFailMessage)
+
+    return result as {
+      orderNo: string
+      bizOrderNo: string
+      payStatus: 'success' | 'pending'
+      amount: number
+    }
   }
 
-  // 平台转账退款
-  async transfer_refund(transferRefundId: string, transferId: string, amount: number) {
-    return await this.refund(transferRefundId, transferId, '#yunBizUserId_B2C#', amount, 'transfer_refund')
+  /**
+   * 平台转账退款
+   * @param bizOrderNo 商户订单号（支付订单）
+   * @param oriBizOrderNo 商户原订单号（需要退款的原交易订单号）
+   * @param bizUserId 付款方商户系统用户标识，商户 系统中唯一编号。
+   * @param amount 订单金额
+   */
+  async transfer_refund(bizOrderNo: string, oriBizOrderNo: string, bizUserId: string, amount: number) {
+    const param = {
+      bizOrderNo,
+      oriBizOrderNo,
+      bizUserId,
+      amount,
+      refundType: 'D0',
+      backUrl: this.config.notify + 'transfer_refund',
+    }
+    const result = await this.bin.service_soa('OrderService', 'refund', param)
+
+    // 如果支付状态为失败
+    if (result.payStatus === 'fail') die.hint('退款申请异常：' + result.payFailMessage)
+
+    return result as {
+      orderNo: string
+      bizOrderNo: string
+      payStatus: 'success' | 'pending'
+      amount: number
+    }
   }
 
   /**
@@ -389,15 +726,9 @@ export class AllinPayOrderService extends AllinPayService {
    * @param bankCardNo 银行卡号
    * @param name 姓名
    * @param amount 订单金额
+   * @param fee 手续费
    */
-  async withdrawApplyHT(
-    bizOrderNo: string,
-    bizUserId: string,
-    subAcctNo: string,
-    bankCardNo: string,
-    name: string,
-    amount: number
-  ) {
+  async withdrawApplyHT(bizOrderNo: string, bizUserId: string, subAcctNo: string, bankCardNo: string, name: string, amount: number, fee: number) {
     const accountSetNo = this.config.accountSetNo
     const withdrawType = 'D0'
 
@@ -406,7 +737,7 @@ export class AllinPayOrderService extends AllinPayService {
       bizUserId,
       accountSetNo,
       amount,
-      fee: 0,
+      fee,
       validateType: 0,
       bankCardNo,
       withdrawType,
@@ -446,7 +777,7 @@ export class AllinPayOrderService extends AllinPayService {
   }
 
   // 申请提现（TLT存管模式）
-  async withdrawApplyTLT(bizOrderNo: string, bizUserId: string, bankCardNo: string, bankCardPro: 0 | 1, amount: number) {
+  async withdrawApplyTLT(bizOrderNo: string, bizUserId: string, bankCardNo: string, bankCardPro: number, amount: number, fee: number) {
     const accountSetNo = this.config.accountSetNo
     const withdrawType = 'D0'
 
@@ -455,7 +786,7 @@ export class AllinPayOrderService extends AllinPayService {
       bizUserId,
       accountSetNo,
       amount,
-      fee: 0,
+      fee,
       validateType: 0,
       bankCardNo,
       bankCardPro,
@@ -539,13 +870,7 @@ export class AllinPayOrderService extends AllinPayService {
    * @param startPosition 起始位置，取值>0 eg：查询第 11 条到 20 条的 记录（start =11）
    * @param queryNum 查询条数，eg：查询第 11 条到 20 条的 记录（queryNum =10）， 查询条数最多 5000
    */
-  async queryInExpDetail(
-    bizUserId: string,
-    dateStart: dayjs.Dayjs,
-    dateEnd: dayjs.Dayjs,
-    startPosition = 1,
-    queryNum = 5000
-  ) {
+  async queryInExpDetail(bizUserId: string, dateStart: dayjs.Dayjs, dateEnd: dayjs.Dayjs, startPosition = 1, queryNum = 5000) {
     const param = {
       bizUserId,
       startPosition,

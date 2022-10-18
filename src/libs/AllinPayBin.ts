@@ -24,11 +24,10 @@ export class AllinPayBin {
   async service_soa(service: string, method: string, param: Dic<any>) {
     // 组装参数并请求
     const params = await this.getParams({ service, method, param })
-    const axiosConfig = { params }
 
     // 请求并记录开始、结束时间
     const startAt = Date.now()
-    const res = await axios.get(this.config.endpoint + '/service/soa', axiosConfig)
+    const res = await axios.get(this.config.endpoint + '/service/soa', { params, paramsSerializer: (params) => querystring.stringify(params) })
     const endAt = Date.now()
 
     // 触发请求事件
