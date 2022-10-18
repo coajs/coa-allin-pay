@@ -13,7 +13,7 @@ export class AllinPayMemberService extends AllinPayService {
    * @param bizUserId 商户系统用户标识 商户系统中唯一编号
    * @param memberType 会员类型 2企业会员 3个人会员
    * @param source 访问终端类型 1Mobile 2PC
-   * @param acctOrgType 0-通联 1-华通银行 默认1
+   * @param acctOrgType 开户机构类型 0-通联 1-华通银行（已下线） 13-华瑞银行 不上送默认0
    */
   async createMember(bizUserId: string, memberType: AllinPay.MemberType, source: 1 | 2, acctOrgType: number) {
     const param = { bizUserId, memberType, source }
@@ -26,7 +26,7 @@ export class AllinPayMemberService extends AllinPayService {
   }
 
   /**
-   * 创建会员
+   * 锁定会员
    * 在业务端用户存在账户安全风险等异常情况，需要限制交易时使用，会员被锁定后将无法创建订单，也不能收款。 除解锁会员之外，其它接口都将返回错误信息“会员已锁定”
    * @param bizUserId 商户系统用户标识 商户系统中唯一编号
    */
@@ -232,7 +232,7 @@ export class AllinPayMemberService extends AllinPayService {
    * 该接口支持查询个人会员、企业会员。
    * 针对通联存管使用汇入金或华通存管的客户，可根据上送开户机构类型查询对应会员开通的通联子账号或华通子账号；
    * @param bizUserId 商户系统用户标识 商户系统中唯一编号
-   * @param acctOrgType 0-通联 1-华通银行 默认1
+   * @param acctOrgType 开户机构类型 0-通联 1-华通银行（已下线） 13-华瑞银行 不上送默认0
    */
   async getMemberInfo(bizUserId: string, acctOrgType: number) {
     const param = { bizUserId, acctOrgType }

@@ -30,6 +30,8 @@ const config = {
   privateKey: Buffer.from([]),
   allinPublicKey: Buffer.from([]),
   bankPrivateKey: Buffer.from([]),
+  platformBizUserId: '#yunBizUserId_B2C#',
+  consumerIp: '8.133.183.55',
 }
 
 const memberInfo = {
@@ -129,6 +131,17 @@ export namespace AllinPay {
     bizOrderNo: string
   }
 
+  export interface PaymentInformationDetail {
+    collOrderNo: string
+    collAmount: number
+    payerName: string
+    payerId: string
+    collTime: string
+    payTotalAmount: number
+    unPayTotalAmount: number
+    receiverInfoList?: Array<{ receiverId: string; receiverName: string; managedCollAmount: number; payAmount: number; unPayAmount: number; status: number }>
+  }
+
   // 2企业会员 3个人会员
   export type MemberType = 2 | 3
 
@@ -136,4 +149,38 @@ export namespace AllinPay {
   export type BankCardInfo = typeof bankCardInfo
   export type CardBinInfo = typeof cardBinInfo
   export type InExpDetail = typeof inExpDetail
+
+  export interface SplitRuleItem {
+    bizUserId: string
+    amount: number
+    fee: number
+  }
+
+  export interface RecieverListItem {
+    bizUserId: string
+    amount: number
+  }
+
+  interface CollectPayListItem {
+    bizOrderNo: string
+    amount: number
+  }
+
+  export interface BatchPayListItem {
+    bizOrderNo: string
+    collectPayList: CollectPayListItem[]
+    bizUserId: string
+    amount: number
+    fee: number
+    splitRuleList?: SplitRuleItem[]
+  }
+
+  export interface OrderRefundListItem {
+    splitBizOrderNo: string
+    amount: number
+    bizUserId: string
+    splitRefundList: Array<{ bizUserId: string; amount: number; feeAmount: number; accountSetNo?: string }>
+    totalSplitAmount?: number
+    totalSplitfeeAmount?: number
+  }
 }
