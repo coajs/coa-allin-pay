@@ -727,8 +727,9 @@ export class AllinPayOrderService extends AllinPayService {
    * @param name 姓名
    * @param amount 订单金额
    * @param fee 手续费
+   * @param summary 摘要
    */
-  async withdrawApplyHT(bizOrderNo: string, bizUserId: string, subAcctNo: string, bankCardNo: string, name: string, amount: number, fee: number) {
+  async withdrawApplyHT(bizOrderNo: string, bizUserId: string, subAcctNo: string, bankCardNo: string, name: string, amount: number, fee: number, summary = '') {
     const accountSetNo = this.config.accountSetNo
     const withdrawType = 'D0'
 
@@ -754,6 +755,7 @@ export class AllinPayOrderService extends AllinPayService {
       source: 1,
       industryCode: '1910',
       industryName: '其他',
+      summary,
       backUrl: this.config.notify + 'withdraw',
     }
     this.bin.param_encrypt(param, ['bankCardNo'])
@@ -777,7 +779,7 @@ export class AllinPayOrderService extends AllinPayService {
   }
 
   // 申请提现（TLT存管模式）
-  async withdrawApplyTLT(bizOrderNo: string, bizUserId: string, bankCardNo: string, bankCardPro: number, amount: number, fee: number) {
+  async withdrawApplyTLT(bizOrderNo: string, bizUserId: string, bankCardNo: string, bankCardPro: number, amount: number, fee: number, summary = '') {
     const accountSetNo = this.config.accountSetNo
     const withdrawType = 'D0'
 
@@ -799,6 +801,7 @@ export class AllinPayOrderService extends AllinPayService {
       source: 1,
       industryCode: '1910',
       industryName: '其他',
+      summary,
       backUrl: this.config.notify + 'withdraw',
     }
     this.bin.param_encrypt(param, ['bankCardNo'])
