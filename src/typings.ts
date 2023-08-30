@@ -23,6 +23,10 @@ const config = {
     appWxaId: '',
     appWxaName: '',
   },
+  wxOrgCashierPay: {
+    vspCusId: '',
+    limitPay: '',
+  },
   bankAcct: {
     acctName: '',
     acctNo: '',
