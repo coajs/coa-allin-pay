@@ -247,6 +247,70 @@ export class AllinPayOrderService extends AllinPayService {
     }
   }
 
+  async consumeApplyCashierOrg(
+    bizOrderNo: string,
+    payerId: string,
+    recieverId: string,
+    openId: string,
+    amount: number,
+    fee: number,
+    goodsName: string,
+    splitRule: AllinPay.SplitRuleItem[],
+    summary = '',
+    extendOption: { [key: string]: any } = {},
+    extendParams: { frontUrl?: string } = {}
+  ) {
+    const param = {
+      bizOrderNo,
+      payerId,
+      recieverId,
+      amount,
+      fee,
+      payMethod: {
+        WECHATPAY_MINIPROGRAM_CASHIER_VSP_ORG: {
+          vspCusid: extendOption?.vspCusId || this.config.wxOrgCashierPay.vspCusId,
+          limitPay: extendOption?.limitPay || this.config.wxOrgCashierPay.limitPay,
+          amount,
+        },
+      },
+      validateType: 0,
+      summary: summary.slice(0, 20),
+      extendInfo: summary.slice(0, 50),
+      source: 1,
+      industryCode: '1910',
+      industryName: '其他',
+      backUrl: this.config.notify + 'trade_pay',
+      goodsName: goodsName || '订单' + bizOrderNo,
+      ...extendParams,
+    }
+    splitRule.length &&
+    _.assign(param, {
+      splitRule: _.map(splitRule, ({ bizUserId, amount, fee }) => {
+        if (bizUserId === '#yunBizUserId_B2C#') {
+          return { bizUserId, amount, fee, accountSetNo: '100001' }
+        } else {
+          return { bizUserId, amount, fee }
+        }
+      }),
+    })
+    const result = await this.bin.service_soa('OrderService', 'consumeApply', param)
+
+    // 如果支付状态为失败
+    if (result.payStatus === 'fail') die.hint('支付消费异常：' + result.payFailMessage)
+
+    // 处理payInfo
+    if (typeof result.payInfo === 'string') result.payInfo = JSON.parse(result.payInfo)
+
+    return result as {
+      bizUserId: string
+      bizOrderNo: string
+      orderNo: string
+      payStatus: 'success' | 'pending'
+      payInfo: Record<string, any>
+      miniprogramPayInfo_VSP: Record<string, any>
+    }
+  }
+
   /**
    * 消费申请(H5通联通集团模式)
    * @param bizOrderNo 商户订单号（支付订单）
@@ -454,6 +518,60 @@ export class AllinPayOrderService extends AllinPayService {
       orderNo: string
       payStatus: 'success' | 'pending'
       payInfo: Record<string, any>
+    }
+  }
+
+  async agentCollectApplyCashierOrg(
+    bizOrderNo: string,
+    payerId: string,
+    recieverList: AllinPay.RecieverListItem[],
+    openId: string,
+    amount: number,
+    fee: number,
+    goodsName: string,
+    summary = '',
+    extendOption: { [key: string]: any } = {},
+    extendParams: { frontUrl?: string } = {}
+  ) {
+    const param = {
+      bizOrderNo,
+      payerId,
+      recieverList,
+      amount,
+      fee,
+      payMethod: {
+        WECHATPAY_MINIPROGRAM_CASHIER_VSP_ORG: {
+          vspCusid: extendOption?.vspCusId || this.config.wxOrgCashierPay.vspCusId,
+          limitPay: extendOption?.limitPay || this.config.wxOrgCashierPay.limitPay,
+          amount,
+        },
+      },
+      validateType: 0,
+      summary: summary.slice(0, 20),
+      extendInfo: summary.slice(0, 50),
+      source: 1,
+      industryCode: '1910',
+      industryName: '其他',
+      backUrl: this.config.notify + 'agent_collect',
+      goodsName: goodsName || '订单' + bizOrderNo,
+      tradeCode: '3001',
+      ...extendParams,
+    }
+    const result = await this.bin.service_soa('OrderService', 'agentCollectApply', param)
+
+    // 如果支付状态为失败
+    if (result.payStatus === 'fail') die.hint('支付消费异常：' + result.payFailMessage)
+
+    // 处理payInfo
+    if (typeof result.payInfo === 'string') result.payInfo = JSON.parse(result.payInfo)
+
+    return result as {
+      bizUserId: string
+      bizOrderNo: string
+      orderNo: string
+      payStatus: 'success' | 'pending'
+      payInfo: Record<string, any>
+      miniprogramPayInfo_VSP: Record<string, any>
     }
   }
 
