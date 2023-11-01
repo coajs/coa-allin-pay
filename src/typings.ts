@@ -111,18 +111,25 @@ const inExpDetail = {
 export namespace AllinPay {
   export type Config = typeof config
 
-  export interface CompanyBasicInfo {
+  export interface SetCompanyBasicInfo {
     companyName: string
     authType: 2
     uniCredit: string
-    legalName: string
     identityType: 1
+    legalName: string
     legalIds: string
     legalPhone: string
     accountNo: string
     parentBankName: string
     bankName: string
     unionBank: string
+  }
+
+  export interface UpdateCompanyBasicInfo {
+    companyName?: string
+    legalName?: string
+    legalIds?: string
+    legalPhone?: string
   }
 
   export interface OrderDetail {
