@@ -210,7 +210,7 @@ export class AllinPayMemberService extends AllinPayService {
    * @param companyBasicInfo 企业详细信息
    * @param isAuth 是否进行线上认证
    */
-  async setCompanyInfo(bizUserId: string, companyBasicInfo: AllinPay.CompanyBasicInfo, isAuth = true) {
+  async setCompanyInfo(bizUserId: string, companyBasicInfo: AllinPay.SetCompanyBasicInfo, isAuth = true) {
     this.bin.param_encrypt(companyBasicInfo, ['accountNo', 'legalIds'])
     const param = {
       bizUserId,
@@ -224,6 +224,33 @@ export class AllinPayMemberService extends AllinPayService {
       phone: string
       identityType: 1
       identityNo: string
+    }
+  }
+
+  /**
+   * 企业会员信息修改
+   * 此接口仅支持企业会员（审核通过）
+   * 接口仅上送需修改的字段信息，上送字段含“企业名称、法人姓名、法人证件类型、法人证件号码”时，云商通准实时调用认证渠道核验信息的准确性；其他信息根据接口上送信息替换；
+   * 对于信息修改操作，上送所有需修改信息均认证成功才操作修改，否则信息均不修改；
+   * 企业信息修改后，系统准实时触发营业执照及法人证件 OCR 识别，将修改后信息与预留影印件不匹配的则更新 OCR 比对结果并通过【企业会员信息修改结果通知】，商户需根据 OCR 结果判断，是否需通过【影印件采集】接口，重新上传影印件。
+   * @param bizUserId 商户系统用户标识 商户系统中唯一编号
+   * @param reqsn 商户请求流水号
+   * @param companyBasicInfo 企业详细信息
+   */
+  async updateCompanyInfo(bizUserId: string, reqsn: string, companyBasicInfo: AllinPay.UpdateCompanyBasicInfo) {
+    const param = {
+      bizUserId,
+      reqsn,
+      ...companyBasicInfo,
+      backUrl: this.config.notify + 'update_company_info',
+    }
+    this.bin.param_encrypt(param, ['legalIds'])
+    const result = await this.bin.service_soa('MemberService', 'updateCompanyInfo', param)
+    return result as {
+      bizUserId: string
+      reqsn: string
+      result?: number
+      failReason?: string
     }
   }
 
