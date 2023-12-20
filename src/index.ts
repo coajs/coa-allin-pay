@@ -1,5 +1,7 @@
 export { AllinPay } from './typings'
 export { AllinPayBin } from './libs/AllinPayBin'
-export { AllinPayOrderService } from './services/AllinPayOrderService'
+export { AllinPaySybBin } from './libs/AllinPaySybBin'
+export { AllinPayComplaintService } from './services/AllinPayComplaintService'
 export { AllinPayMemberService } from './services/AllinPayMemberService'
 export { AllinPayMerchantService } from './services/AllinPayMerchantService'
+export { AllinPayOrderService } from './services/AllinPayOrderService'
