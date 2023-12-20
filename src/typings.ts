@@ -136,6 +136,7 @@ export namespace AllinPay {
     buyerBizUserId: string
     amount: number
     orderNo: string
+    chnltrxid?: string
     errorMessage?: string
     orderStatus: number
     payDatetime: string
@@ -193,5 +194,16 @@ export namespace AllinPay {
     splitRefundList: Array<{ bizUserId: string; amount: number; feeAmount: number; accountSetNo?: string }>
     totalSplitAmount?: number
     totalSplitfeeAmount?: number
+  }
+}
+
+export namespace AllinPaySyb {
+  export interface Config {
+    endpoint: string;
+    appId: string;
+    orgId: string;
+    cusId: string;
+    sybPrivateKey: Buffer;
+    sybPublicKey: Buffer;
   }
 }

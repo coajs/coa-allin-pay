@@ -245,6 +245,11 @@ coa-helper@^1.2.1:
     hashids "^2.2.8"
     lodash "^4.17.21"
 
+coa-secure@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.npmmirror.com/coa-secure/-/coa-secure-1.2.0.tgz#f716cb46be7cac5b7d0ba6827f15d27da5e88978"
+  integrity sha512-snQFqueNXTMiza3XWULyowONHQ99y0b9t54J0TPyOWHb90qCltM9Cup+qxXGzFJ6QSwxGrYtMAUQeoy58hxkYg==
+
 color-convert@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/color-convert/-/color-convert-2.0.1.tgz#72d3a68d598c9bdb3af2ad1e84f21d896abd4de3"

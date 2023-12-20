@@ -914,7 +914,6 @@ export class AllinPayOrderService extends AllinPayService {
       payMethod: {
         WITHDRAW_TLT: {
           payTypeName: 'withdraw_tlt',
-          businessCode: '09800',
         },
       },
       source: 1,
