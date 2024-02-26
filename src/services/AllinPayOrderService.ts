@@ -1,5 +1,5 @@
 import { die } from 'coa-error'
-import { dayjs, _ } from 'coa-helper'
+import { _ } from 'coa-helper'
 import { AllinPayService } from '../libs/AllinPayService'
 import { AllinPay } from '../typings'
 
@@ -991,13 +991,13 @@ export class AllinPayOrderService extends AllinPayService {
    * @param startPosition 起始位置，取值>0 eg：查询第 11 条到 20 条的 记录（start =11）
    * @param queryNum 查询条数，eg：查询第 11 条到 20 条的 记录（queryNum =10）， 查询条数最多 5000
    */
-  async queryInExpDetail(bizUserId: string, dateStart: dayjs.Dayjs, dateEnd: dayjs.Dayjs, startPosition = 1, queryNum = 5000) {
+  async queryInExpDetail(bizUserId: string, dateStart: string, dateEnd: string, startPosition = 1, queryNum = 5000) {
     const param = {
       bizUserId,
       startPosition,
       queryNum,
-      dateStart: dateStart.format('YYYY-MM-DD'),
-      dateEnd: dateEnd.format('YYYY-MM-DD'),
+      dateStart,
+      dateEnd,
     }
     const result = await this.bin.service_soa('OrderService', 'queryInExpDetail', param)
     return result as {
