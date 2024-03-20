@@ -897,7 +897,7 @@ export class AllinPayOrderService extends AllinPayService {
   }
 
   // 申请提现（TLT存管模式）
-  async withdrawApplyTLT(bizOrderNo: string, bizUserId: string, bankCardNo: string, bankCardPro: number, amount: number, fee: number, summary = '', validateType = 0) {
+  async withdrawApplyTLT(bizOrderNo: string, bizUserId: string, bankCardNo: string, bankCardPro: number, amount: number, fee: number, summary = '') {
     const accountSetNo = this.config.accountSetNo
     const withdrawType = 'D0'
 
@@ -907,7 +907,53 @@ export class AllinPayOrderService extends AllinPayService {
       accountSetNo,
       amount,
       fee,
-      validateType,
+      validateType: 0,
+      bankCardNo,
+      bankCardPro,
+      withdrawType,
+      payMethod: {
+        WITHDRAW_TLT: {
+          payTypeName: 'withdraw_tlt',
+        },
+      },
+      source: 1,
+      industryCode: '1910',
+      industryName: '其他',
+      summary,
+      backUrl: this.config.notify + 'withdraw',
+    }
+    this.bin.param_encrypt(param, ['bankCardNo'])
+
+    const result = await this.bin.service_soa('OrderService', 'withdrawApply', param)
+
+    // 如果支付状态为失败
+    if (result.payStatus === 'fail') die.hint('提现申请异常：' + result.payFailMessage)
+
+    _.assign(result, { accountSetNo, withdrawType })
+
+    return result as {
+      bizUserId: string
+      bizOrderNo: string
+      orderNo: string
+      accountSetNo: string
+      withdrawType: string
+      payStatus: 'success' | 'pending'
+      payInfo: string
+    }
+  }
+
+  // 申请平台提现（TLT存管模式）
+  async withdrawApplyTLTPlatform(bizOrderNo: string, bizUserId: string, bankCardNo: string, bankCardPro: number, amount: number, fee: number, summary = '') {
+    const accountSetNo = this.config.platformAccountSetNo
+    const withdrawType = 'D0'
+
+    const param = {
+      bizOrderNo,
+      bizUserId,
+      accountSetNo,
+      amount,
+      fee,
+      validateType: 1,
       bankCardNo,
       bankCardPro,
       withdrawType,

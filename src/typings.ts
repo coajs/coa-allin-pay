@@ -3,6 +3,7 @@ const config = {
   notify: '',
   sysId: '',
   accountSetNo: '',
+  platformAccountSetNo: '',
   wxMiniPay: {
     mchId: '',
     appWxaId: '',
