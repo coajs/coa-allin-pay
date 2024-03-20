@@ -897,7 +897,7 @@ export class AllinPayOrderService extends AllinPayService {
   }
 
   // 申请提现（TLT存管模式）
-  async withdrawApplyTLT(bizOrderNo: string, bizUserId: string, bankCardNo: string, bankCardPro: number, amount: number, fee: number, summary = '') {
+  async withdrawApplyTLT(bizOrderNo: string, bizUserId: string, bankCardNo: string, bankCardPro: number, amount: number, fee: number, summary = '', validateType = 0) {
     const accountSetNo = this.config.accountSetNo
     const withdrawType = 'D0'
 
@@ -907,7 +907,7 @@ export class AllinPayOrderService extends AllinPayService {
       accountSetNo,
       amount,
       fee,
-      validateType: 0,
+      validateType,
       bankCardNo,
       bankCardPro,
       withdrawType,
