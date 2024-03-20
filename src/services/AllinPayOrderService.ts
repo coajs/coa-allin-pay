@@ -438,6 +438,28 @@ export class AllinPayOrderService extends AllinPayService {
     }
   }
 
+  /**
+   * 重发短信验证码
+   * @param bizOrderNo 商户订单号（支付订单）
+   */
+  async resendPaySMS(bizOrderNo: string) {
+    const param = {
+      bizOrderNo,
+    }
+    const result = await this.bin.service_soa('OrderService', 'resendPaySMS', param)
+
+    // 如果支付状态为失败
+    if (result.payStatus === 'fail') die.hint('重发验证码异常：' + result.payFailMessage)
+
+    return result
+  }
+
+  /**
+   * 确认支付（短信验证码确认）
+   * @param bizOrderNo 商户订单号（支付订单）
+   * @param bizUserId 商户系统用户标识，商户系统中唯一编号。
+   * @param verificationCode 短信验证码
+   */
   async pay(bizOrderNo: string, bizUserId: string, verificationCode: string) {
     const param = {
       bizOrderNo,
@@ -448,7 +470,7 @@ export class AllinPayOrderService extends AllinPayService {
     const result = await this.bin.service_soa('OrderService', 'pay', param)
 
     // 如果支付状态为失败
-    if (result.payStatus === 'fail') die.hint('支付消费异常：' + result.payFailMessage)
+    if (result.payStatus === 'fail') die.hint('确认支付异常：' + result.payFailMessage)
 
     return result
   }
